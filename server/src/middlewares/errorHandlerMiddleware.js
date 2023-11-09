@@ -13,7 +13,13 @@ const errorHandlerMiddleware = (err, req, res, next) => {
         customError.msg = `${Object.keys(err.keyValue)} has existed`
         customError.statusCode = StatusCodes.BAD_REQUEST
     }
-    console.log("Error:", customError.msg)
+
+    // JWT expired
+    if (err.message.includes('jwt expired')) {
+        customError.msg = 'Refresh token has expired, please login'
+        customError.statusCode = StatusCodes.UNAUTHORIZED
+    }
+
     return res.status(customError.statusCode).json({ success: false, msg: customError.msg })
 }
 

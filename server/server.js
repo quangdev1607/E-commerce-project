@@ -4,10 +4,9 @@ require('express-async-errors')
 
 const express = require('express')
 const app = express()
+const cookieParser = require('cookie-parser')
+
 const initRoutes = require('./src/routes')
-
-
-// const notFoundMiddleWare = require('./src/middlewares/notFoundMiddleware')
 const { errorHandlerMiddleware, notFoundError } = require('./src/middlewares/errorHandlerMiddleware')
 //-----------------DB-----------------------
 
@@ -17,6 +16,7 @@ const connectDb = require('./src/config/db/connect')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 //-----------------ROUTES-----------------------
 
