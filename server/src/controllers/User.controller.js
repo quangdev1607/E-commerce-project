@@ -1,8 +1,11 @@
 const { StatusCodes } = require('http-status-codes')
 const User = require('../models/user')
-const { BadRequestError, UnAuthenticatedError } = require('../errors')
+const { BadRequestError, UnAuthenticatedError, NotFoundError } = require('../errors')
 const { createAccessToken, createRefreshToken } = require('../middlewares/jwt')
 const jwt = require('jsonwebtoken')
+const sender = require('../utils/sendMail')
+const sendMail = require('../utils/sendMail')
+const crypto = require('crypto')
 
 class UserController {
     async register(req, res) {
@@ -36,23 +39,22 @@ class UserController {
 
         if (user && await user.comparePassword(password)) {
             // Tách password và role ra khỏi user object
-            const { password, role, ...userData } = user._doc
+            const { password, role, refreshToken, ...userData } = user._doc
 
             //Tạo accessToken
             const accessToken = createAccessToken(user._id, role)
 
             // Tạo refreshToken
-            const refreshToken = createRefreshToken(user._id)
+            const newRefreshToken = createRefreshToken(user._id)
 
             // Lưu refreshToken vào db
-            await User.findByIdAndUpdate(user._id, { refreshToken }, { new: true }) // new:true => trả data sau khi update
+            await User.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken }, { new: true }) // new:true => trả data sau khi update
 
             // Lưu refreshToken vào cookie
-            res.cookie('refreshToken', refreshToken, {
+            res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 maxAge: 7 * 24 * 60 * 60 * 1000
             })
-
 
             res.status(StatusCodes.OK).json({
                 success: user ? true : false,
@@ -84,7 +86,7 @@ class UserController {
         const cookie = req.cookies
 
         // Kiểm tra có cookie hay token trong cookie  hay không
-        if (!cookie || !cookie.refreshToken) throw new Error('No refresh token in cookies')
+        if (!cookie || !cookie.refreshToken) throw new NotFoundError('No refresh token in cookies')
 
         const payload = jwt.verify(cookie.refreshToken, process.env.JWT_SECRET_REFRESH_TOKEN)
         const user = await User.findOne({ _id: payload._id, refreshToken: cookie.refreshToken })
@@ -98,8 +100,9 @@ class UserController {
 
     async logOut(req, res) {
         const cookie = req.cookies
-        if (!cookie || !cookie.refreshToken) throw new Error('Cannot found refresh token')
-        // Reset refresh token thành chuỗi rỗng
+        if (!cookie || !cookie.refreshToken) throw new NotFoundError('Cannot found refresh token')
+
+        // Reset refresh token thành chuỗi rỗng trong db
         const user = await User.findOneAndUpdate({ refreshToken: cookie.refreshToken }, { refreshToken: '' }, { new: true })
 
 
@@ -110,7 +113,62 @@ class UserController {
 
         res.status(StatusCodes.OK).json({
             success: user ? true : false,
-            msg: user ? "Logout successfully" : "Can not logout, please try again"
+            msg: user ? "Logout successfully" : "Cannot logout, please try again"
+        })
+    }
+
+    /*
+    Client cung cấp email để thay đổi password
+    Server check email có hợp không: Gửi mail kèm theo link (password change token)
+    Client sẽ click vào cái link đó để lấy token
+    Client dùng api thay đổi password và kèm theo token gửi về server
+    Server sẽ check token đó có giống với token lúc gửi đi hay không
+    Nếu giống thì cho phép đổi password, không giống thì báo lỗi về client
+    */
+
+    // Check mail + send mail
+    async forgotPassword(req, res) {
+        const { email } = req.query
+        if (!email) throw new BadRequestError('Email is required')
+        const user = await User.findOne({ email })
+        if (!user) throw new NotFoundError('User not found')
+        const resetToken = await user.createPasswordChangedToken()
+        await user.save()
+
+        const html = `Please click the following link to change your password. This link will be expired in 15 minutes from now. <a href=${process.env.CLIENT_URL}/api/user/reset-password/${resetToken}>Click here to change password</a>`
+
+        const data = {
+            email,
+            html
+        }
+        const rs = await sendMail(data)
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            rs
+        })
+    }
+
+    // So sánh token
+    async resetPassword(req, res) {
+        const { password, token } = req.body
+
+        if (!password) throw new BadRequestError('New password is required')
+        if (!token) throw new NotFoundError('Not found token')
+
+        const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex')
+        const user = await User.findOne({ passwordResetToken, passwordResetExpire: { $gt: Date.now() } })
+
+        if (!user) throw new NotFoundError('User with this token is not found')
+
+        user.password = password
+        user.passwordResetToken = undefined
+        user.passwordChangedAt = Date.now()
+        user.passwordResetExpire = undefined
+        await user.save()
+
+        return res.status(StatusCodes.OK).json({
+            success: user ? true : false,
+            msg: user ? 'Update password successfully' : 'Something went wrong'
         })
     }
 }
