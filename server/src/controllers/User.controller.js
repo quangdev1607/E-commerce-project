@@ -107,7 +107,6 @@ class UserController {
 
     async updateUserByAdmin(req, res) {
         const { userId } = req.params
-        console.log(userId)
         if (Object.keys(req.body).length === 0) throw new BadRequestError('missing inputs')
         const user = await User.findByIdAndUpdate({ _id: userId }, req.body, { new: true }).select('-password -role -refreshToken')
         if (!user) throw new NotFoundError('User not found')

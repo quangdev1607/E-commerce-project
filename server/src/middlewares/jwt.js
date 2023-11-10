@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const createAccessToken = (uid, role) => jwt.sign(
     { userId: uid, role }, // payload (object muốn hash)
     process.env.JWT_SECRET, // secret key
-    { expiresIn: '90s' } // option: khai báo thời gian hết hạn token
+    { expiresIn: '1d' } // option: khai báo thời gian hết hạn token
 )
 
 const createRefreshToken = (uid) => jwt.sign(
