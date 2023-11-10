@@ -18,6 +18,14 @@ const verifyAccessToken = async (req, res, next) => {
 
 }
 
+const isAdmin = async (req, res, next) => {
+    const { role } = req.user
+    if (role !== 'admin') throw new UnAuthenticatedError('You are not an admin')
+    next()
+}
+
+
 module.exports = {
-    verifyAccessToken
+    verifyAccessToken,
+    isAdmin
 }

@@ -6,7 +6,6 @@ const sendMail = async ({ email, html }) => {
         port: 465,
         secure: true,
         auth: {
-            // TODO: replace `user` and `pass` values from <https://forwardemail.net>
             user: process.env.EMAIL_NAME,
             pass: process.env.EMAIL_APP_PASSWORD,
         },

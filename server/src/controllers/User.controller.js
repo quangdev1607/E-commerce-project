@@ -38,7 +38,7 @@ class UserController {
         const user = await User.findOne({ email })
 
         if (user && await user.comparePassword(password)) {
-            // Tách password và role ra khỏi user object
+            // Tách password,role và rftoken ra khỏi user object
             const { password, role, refreshToken, ...userData } = user._doc
 
             //Tạo accessToken
@@ -67,17 +67,53 @@ class UserController {
     }
 
     async allUser(req, res) {
-        const users = await User.find()
-        res.status(StatusCodes.OK).json(users)
+        const users = await User.find().select('-refreshToken -password -role')
+        res.status(StatusCodes.OK).json({
+            success: users ? true : false,
+            users
+        })
 
     }
 
     async getOneUser(req, res) {
-        const { _id } = req.user
-        const user = await User.findById(_id).select('-refreshToken -password -role')
+        const { userId } = req.user
+        const user = await User.findById({ _id: userId }).select('-refreshToken -password -role')
         return res.status(StatusCodes.OK).json({
             success: user ? true : false,
             result: user ? user : 'User not found'
+        })
+    }
+
+    async deleteUser(req, res) {
+        const { _id } = req.query
+        if (!_id) throw new BadRequestError('missing inputs')
+        const deletedUser = await User.findByIdAndDelete(_id)
+        if (!deletedUser) throw new NotFoundError('User not found')
+        res.status(StatusCodes.OK).json({
+            success: deletedUser ? true : false,
+            deletedUser: deletedUser ? `User with email ${deletedUser.email} has been deleted` : 'Something wrong'
+        })
+    }
+
+    async updateUser(req, res) {
+        const { userId } = req.user
+        if (!userId || Object.keys(req.body).length === 0) throw new BadRequestError('missing inputs')
+        const user = await User.findByIdAndUpdate({ _id: userId }, req.body, { new: true }).select('-password -role -refreshToken')
+        res.status(StatusCodes.OK).json({
+            success: user ? true : false,
+            updatedUser: user ? user : 'Something wrong'
+        })
+    }
+
+    async updateUserByAdmin(req, res) {
+        const { userId } = req.params
+        console.log(userId)
+        if (Object.keys(req.body).length === 0) throw new BadRequestError('missing inputs')
+        const user = await User.findByIdAndUpdate({ _id: userId }, req.body, { new: true }).select('-password -role -refreshToken')
+        if (!user) throw new NotFoundError('User not found')
+        res.status(StatusCodes.OK).json({
+            success: user ? true : false,
+            updatedUser: user ? user : 'Somethign wrong'
         })
     }
 
@@ -86,14 +122,16 @@ class UserController {
         const cookie = req.cookies
 
         // Kiểm tra có cookie hay token trong cookie  hay không
-        if (!cookie || !cookie.refreshToken) throw new NotFoundError('No refresh token in cookies')
+        if (!cookie) throw new NotFoundError('No cookie found')
+        if (!cookie.refreshToken) throw new NotFoundError('No refresh token in cookies')
 
         const payload = jwt.verify(cookie.refreshToken, process.env.JWT_SECRET_REFRESH_TOKEN)
-        const user = await User.findOne({ _id: payload._id, refreshToken: cookie.refreshToken })
+        const user = await User.findOne({ _id: payload.userId, refreshToken: cookie.refreshToken })
+        const newAccessToken = createAccessToken(user._id, user.role)
         res.status(StatusCodes.OK).json({
             success: user ? true : false,
             newAccessToken: user
-                ? createAccessToken({ _id: user._id, role: user.role })
+                ? newAccessToken
                 : "Cannot found refresh token"
         })
     }
@@ -153,7 +191,7 @@ class UserController {
         const { password, token } = req.body
 
         if (!password) throw new BadRequestError('New password is required')
-        if (!token) throw new NotFoundError('Not found token')
+        if (!token) throw new BadRequestError('Token is required')
 
         const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex')
         const user = await User.findOne({ passwordResetToken, passwordResetExpire: { $gt: Date.now() } })
@@ -162,8 +200,8 @@ class UserController {
 
         user.password = password
         user.passwordResetToken = undefined
-        user.passwordChangedAt = Date.now()
         user.passwordResetExpire = undefined
+        user.passwordChangedAt = Date.now()
         await user.save()
 
         return res.status(StatusCodes.OK).json({
