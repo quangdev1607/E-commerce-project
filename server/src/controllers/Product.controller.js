@@ -2,7 +2,7 @@ const Product = require('../models/product')
 const { BadRequestError, UnAuthenticatedError, NotFoundError } = require('../errors')
 const slugify = require('slugify')
 const { StatusCodes } = require('http-status-codes')
-const product = require('../models/product')
+
 
 
 class ProductController {
@@ -112,6 +112,37 @@ class ProductController {
         res.status(StatusCodes.OK).json({
             success: product ? true : false,
             updatedProduct: product ? product : 'Something wrong'
+        })
+    }
+
+    async rateProduct(req, res) {
+        const { userId } = req.user
+        const { star, comment, pid } = req.body
+        if (!star || !pid) throw new BadRequestError('missing inputs')
+
+        //Trường hợp thằng user đã rate sản phẩm rồi
+        const ratingProduct = await Product.findById(pid)
+        const hasRated = ratingProduct?.rating?.find(el => el.postedBy.toString() === userId) // trả về rating object nếu user đã rate sản phẩm
+
+        if (hasRated) {
+            // update lại star và comment
+            await Product.updateOne(
+                { rating: { $elemMatch: hasRated } },
+                { $set: { "rating.$.star": star, "rating.$.comment": comment } },
+                { new: true }
+            )
+
+        } else {
+            // add star và comment
+            await Product.findByIdAndUpdate(
+                pid,
+                { $push: { rating: { star, comment, postedBy: userId }, } },
+                { new: true }
+            )
+        }
+
+        res.status(StatusCodes.OK).json({
+            status: true,
         })
     }
 
