@@ -141,8 +141,17 @@ class ProductController {
             )
         }
 
+        // Tính trung bình ratings
+        const updatedProduct = await Product.findById(pid)
+        const ratingCount = updatedProduct.rating.length
+        const sumRating = updatedProduct.rating.reduce((accum, el) => accum + Number(el.star), 0)
+        updatedProduct.totalRatings = Math.round(sumRating * 10 / ratingCount) / 10 // Nhân 10 và chia 10 để kq là số thập phân
+
+        await updatedProduct.save()
+
         res.status(StatusCodes.OK).json({
-            status: true,
+            success: updatedProduct ? true : false,
+            updatedProduct
         })
     }
 
