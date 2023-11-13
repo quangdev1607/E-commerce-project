@@ -155,6 +155,13 @@ class ProductController {
         })
     }
 
+    async uploadProductImage(req, res) {
+        console.log(req.file)
+        res.status(StatusCodes.OK).json({
+            msg: 'OK'
+        })
+    }
+
 }
 
 module.exports = new ProductController()

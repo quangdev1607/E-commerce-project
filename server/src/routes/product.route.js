@@ -1,15 +1,22 @@
 const router = require('express').Router()
-const { createProduct, getSingleProduct, getAllProducts, deleteProduct, updateProduct, rateProduct } = require('../controllers/Product.controller')
+const { createProduct, getSingleProduct, getAllProducts, deleteProduct, updateProduct, rateProduct, uploadProductImage } = require('../controllers/Product.controller')
 const { verifyAccessToken, isAdmin } = require('../middlewares/verifyToken')
+const uploadCloud = require('../config/cloudinary/cloudinary.config')
 
-// router.post('/', verifyAccessToken, isAdmin, createProduct)
-// router.get('/', getAllProducts)
-// router.get('/:pid', getSingleProduct)
-// router.delete('/:pid', verifyAccessToken, isAdmin, deleteProduct)
-// router.put('/:pid', verifyAccessToken, isAdmin, updateProduct)
 
-router.route('/').post([verifyAccessToken, isAdmin], createProduct).get(getAllProducts)
-router.route('/ratings').put(verifyAccessToken, rateProduct)
-router.route('/:pid').get(getSingleProduct).delete([verifyAccessToken, isAdmin], deleteProduct).put([verifyAccessToken, isAdmin], updateProduct)
+
+router.route('/')
+    .post([verifyAccessToken, isAdmin], createProduct)
+    .get(getAllProducts)
+
+router.route('/ratings')
+    .put(verifyAccessToken, rateProduct)
+
+router.route('/upload/:pid').post([verifyAccessToken, isAdmin], uploadCloud.single('images'), uploadProductImage)
+
+router.route('/:pid')
+    .get(getSingleProduct)
+    .delete([verifyAccessToken, isAdmin], deleteProduct)
+    .put([verifyAccessToken, isAdmin], updateProduct)
 
 module.exports = router
