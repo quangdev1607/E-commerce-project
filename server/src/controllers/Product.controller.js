@@ -156,9 +156,13 @@ class ProductController {
     }
 
     async uploadProductImage(req, res) {
-        console.log(req.file)
+        const { pid } = req.params
+        if (!req.files) throw new BadRequestError('No files found')
+        const product = await Product.findByIdAndUpdate(pid, { $push: { images: { $each: req.files.map(item => item.path) } }, }, { new: true })
+        if (!product) throw new NotFoundError('Product not found')
         res.status(StatusCodes.OK).json({
-            msg: 'OK'
+            success: product ? true : false,
+            product: product ? product : 'Cannot upload images'
         })
     }
 

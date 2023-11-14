@@ -7,6 +7,7 @@ const sender = require('../utils/sendMail')
 const sendMail = require('../utils/sendMail')
 const crypto = require('crypto')
 
+
 class UserController {
     async register(req, res) {
         /*
@@ -67,7 +68,7 @@ class UserController {
     }
 
     async allUser(req, res) {
-        const users = await User.find().select('-refreshToken -password -role')
+        const users = await User.find().populate("cart.product", "title price brand totalRatings").select('-refreshToken -password -role')
         res.status(StatusCodes.OK).json({
             success: users ? true : false,
             users
@@ -77,7 +78,7 @@ class UserController {
 
     async getOneUser(req, res) {
         const { userId } = req.user
-        const user = await User.findById({ _id: userId }).select('-refreshToken -password -role')
+        const user = await User.findById({ _id: userId }).populate("cart.product", "title price brand totalRatings").select('-refreshToken -password -role')
         return res.status(StatusCodes.OK).json({
             success: user ? true : false,
             result: user ? user : 'User not found'
@@ -207,6 +208,54 @@ class UserController {
             success: user ? true : false,
             msg: user ? 'Update password successfully' : 'Something went wrong'
         })
+    }
+
+    async updateUserAddress(req, res) {
+        const { userId } = req.user
+        if (!req.body.address) throw new BadRequestError('address is required')
+
+        const user = await User.findById(userId)
+        if (!user) throw new NotFoundError('User not found')
+        const duplicatedAddress = user?.address?.find(el => el.toString() === req.body.address)
+        if (duplicatedAddress) {
+            await User.findByIdAndUpdate(userId, { $pull: { address: req.body.address } }, { new: true })
+        }
+        const updatedUser = await User.findByIdAndUpdate(userId, { $push: { address: req.body.address } }, { new: true })
+        res.status(StatusCodes.OK).json({
+            success: user ? true : false,
+            updatedUser
+        })
+    }
+
+    async addUserCart(req, res) {
+        const { userId } = req.user
+        const { pid, quantity, color } = req.body
+        if (!pid || !quantity || !color) throw new BadRequestError('missing inputs')
+        if (pid.length !== 24) throw new BadRequestError('Invalid Product ID')
+
+        const userCart = await User.findById(userId)
+        const hasProduct = userCart?.cart?.find(el => el.product.toString() === pid && el.color === color)
+
+        if (hasProduct) {
+            const response = await User.updateOne(
+                { cart: { $elemMatch: hasProduct } },
+                { $set: { "cart.$.quantity": quantity } },
+                { new: true })
+            res.status(StatusCodes.OK).json({
+                success: response ? true : false,
+                msg: response.acknowledged ? 'Cart updated successfully' : 'Something went wrong',
+                quantity: +hasProduct.quantity !== +quantity ? `from ${hasProduct.quantity} to ${quantity}` : 'remain'
+
+            })
+        } else {
+
+            const response = await User.findByIdAndUpdate(userId, { $push: { cart: { product: pid, quantity, color } } }, { new: true })
+            res.status(StatusCodes.OK).json({
+                success: response ? true : false,
+                msg: response ? 'Successfully add product to cart' : 'Failed to add product',
+                updatedProduct: response
+            })
+        }
     }
 }
 

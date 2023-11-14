@@ -9,7 +9,9 @@ const {
     resetPassword,
     deleteUser,
     updateUser,
-    updateUserByAdmin } = require('../controllers/User.controller')
+    updateUserByAdmin,
+    updateUserAddress,
+    addUserCart } = require('../controllers/User.controller')
 const router = require('express').Router()
 const { verifyAccessToken, isAdmin } = require('../middlewares/verifyToken')
 
@@ -23,6 +25,8 @@ router.get('/', verifyAccessToken, isAdmin, allUser)
 router.delete('/', verifyAccessToken, isAdmin, deleteUser)
 router.put('/resetpassword', resetPassword)
 router.put('/update', verifyAccessToken, updateUser)
+router.put('/address', verifyAccessToken, updateUserAddress)
+router.put('/cart', verifyAccessToken, addUserCart)
 router.put('/:userId', verifyAccessToken, isAdmin, updateUserByAdmin)
 
 

@@ -12,7 +12,7 @@ router.route('/')
 router.route('/ratings')
     .put(verifyAccessToken, rateProduct)
 
-router.route('/upload/:pid').post([verifyAccessToken, isAdmin], uploadCloud.single('images'), uploadProductImage)
+router.route('/upload/:pid').post([verifyAccessToken, isAdmin], uploadCloud.array('images', 10), uploadProductImage)
 
 router.route('/:pid')
     .get(getSingleProduct)

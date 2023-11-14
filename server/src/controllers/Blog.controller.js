@@ -138,6 +138,19 @@ class BlogController {
         }
     }
 
+    async uploadBlogImage(req, res) {
+        const { bid } = req.params
+        if (bid.length !== 24) throw new BadRequestError('Blog id is not valid')
+        if (!req.file) throw new BadRequestError('Image is required')
+        console.log(req.file.path)
+        const blog = await Blog.findByIdAndUpdate(bid, { image: req.file.path }, { new: true })
+        if (!blog) throw new NotFoundError('Blog not found')
+        res.status(StatusCodes.OK).json({
+            success: blog ? true : false,
+            updatedBlog: blog ? blog : 'Cannot upload image'
+        })
+    }
+
 
 }
 
