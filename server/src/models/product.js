@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema({
         lowercase: true
     },
     description: {
-        type: String,
+        type: Array,
         required: true,
     },
     brand: {
@@ -26,8 +26,9 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
     category: {
-        type: mongoose.Types.ObjectId,
-        ref: 'Category'
+        type: String,
+        required: true
+
     },
     quantity: {
         type: Number,
@@ -42,7 +43,6 @@ const productSchema = new mongoose.Schema({
     },
     color: {
         type: String,
-        // enum: ['black, brown, red']
     },
     rating: [
         {
