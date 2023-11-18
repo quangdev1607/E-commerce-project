@@ -173,7 +173,7 @@ class UserController {
         const resetToken = await user.createPasswordChangedToken()
         await user.save()
 
-        const html = `Please click the following link to change your password. This link will be expired in 15 minutes from now. <a href=${process.env.CLIENT_URL}/api/user/reset-password/${resetToken}>Click here to change password</a>`
+        const html = `Please click the following link to change your password. This link will be expired in 15 minutes from now. <a href=${process.env.SERVER_URL}/api/user/reset-password/${resetToken}>Click here to change password</a>`
 
         const data = {
             email,

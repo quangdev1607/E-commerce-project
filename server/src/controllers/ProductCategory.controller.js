@@ -14,7 +14,7 @@ class ProductCategoryController {
     }
 
     async getAllCategories(req, res) {
-        const allCategories = await ProductCategory.find().select('title _id')
+        const allCategories = await ProductCategory.find().select('category _id')
         res.status(StatusCodes.OK).json({
             success: true,
             categories: allCategories

@@ -35,36 +35,63 @@ const data = [
     {
         "category": "ACCESSORIES",
         "products": [
-            "Smartwatches",
-            "Headphone",
-            "Bluetooth",
-            "Keyboard",
-            "Mouse",
-            "Cases"
+            "Samsung",
+            "Motorola",
+            "Logitech",
+            "JBL",
+            "Apple",
+            "USB",
+            "Sennheiser"
         ]
     },
     {
         "category": "TELEVISION",
         "products": [
-            "Apple",
             "Samsung",
-            "LG",
-            "Asus",
-            "Nokia",
-            "BlackBerry"
+            "Motorola",
+            "Logitech",
+            "JBL",
+            "Apple",
+            "USB",
+            "Sennheiser"
         ]
     },
     {
         "category": "PRINTER",
         "products": [
-            "iPad",
             "Samsung",
-            "Acer",
-            "Asus",
-            "Lenovo",
-            "Haier"
+            "Motorola",
+            "Logitech",
+            "JBL",
+            "Apple",
+            "USB",
+            "Sennheiser"
         ]
-    }
+    },
+    {
+        "category": "SPEAKER",
+        "products": [
+            "Samsung",
+            "Motorola",
+            "Logitech",
+            "JBL",
+            "Apple",
+            "USB",
+            "Sennheiser"
+        ]
+    },
+    {
+        "category": "CAMERA",
+        "products": [
+            "Samsung",
+            "Motorola",
+            "Logitech",
+            "JBL",
+            "Apple",
+            "USB",
+            "Sennheiser"
+        ]
+    },
 ]
 
 module.exports = data

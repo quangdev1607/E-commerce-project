@@ -3,7 +3,7 @@ const { verifyAccessToken, isAdmin } = require('../middlewares/verifyToken')
 const { createCategory, getAllCategories, updateCategory, deleteCategory } = require('../controllers/ProductCategory.controller')
 
 router.route('/')
-    .get([verifyAccessToken, isAdmin], getAllCategories)
+    .get(getAllCategories)
     .post([verifyAccessToken, isAdmin], createCategory)
 
 
