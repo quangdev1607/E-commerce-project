@@ -1,0 +1,66 @@
+import React, { useState, useEffect } from "react";
+import Slider from "react-slick";
+import { apiGetProducts } from "../api";
+import { Product } from "../components";
+
+const tabs = [
+	{ id: 1, name: "best seller" },
+	{ id: 2, name: "new arrivals" },
+];
+
+const settings = {
+	dots: false,
+	infinite: false,
+	speed: 700,
+	slidesToShow: 3,
+	slidesToScroll: 3,
+};
+
+const BestSeller = () => {
+	const [bestSellers, setBestSellers] = useState([]);
+	const [newProducts, setNewProducts] = useState([]);
+	const [activeTab, setActiveTab] = useState(1);
+	const [products, setProducts] = useState([]);
+	const fetchProducts = async () => {
+		const response = await Promise.all([apiGetProducts({ sort: "-sold" }), apiGetProducts()]);
+		if (response[0]?.success) {
+			setBestSellers(response[0].data);
+			setProducts(response[0].data);
+		}
+		if (response[1]?.success) setNewProducts(response[1].data);
+	};
+	useEffect(() => {
+		fetchProducts();
+	}, []);
+
+	useEffect(() => {
+		if (activeTab === 1) setProducts(bestSellers);
+		if (activeTab === 2) setProducts(newProducts);
+	}, [activeTab]);
+	return (
+		<div>
+			<div className="flex border-b-2 gap-8 border-main pb-4 mb-5">
+				{tabs.map((tab) => (
+					<span
+						key={tab.id}
+						className={`font-semibold text-[#8A8A8A] text-[20px] uppercase cursor-pointer ${
+							activeTab === tab.id ? "text-black" : ""
+						} `}
+						onClick={() => setActiveTab(tab.id)}
+					>
+						{tab.name}
+					</span>
+				))}
+			</div>
+			<div className="mt-4 mx-[-10px]">
+				<Slider {...settings}>
+					{products.map((product) => (
+						<Product key={product._id} activeTab={activeTab} productData={product} />
+					))}
+				</Slider>
+			</div>
+		</div>
+	);
+};
+
+export default BestSeller;

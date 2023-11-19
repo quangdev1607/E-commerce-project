@@ -17,9 +17,8 @@ const insertData = async (product) => {
         category: product?.category,
         quantity: Math.floor(Math.random() * 1000),
         sold: Math.floor(Math.random() * 100),
-        images: product.images.photos.length !== 0
-            ? product.images.photos
-            : product.images.thumbnail,
+        images: product?.images.photos,
+        thumbnail: product?.images.thumbnail,
         color: product?.variants?.find(el => el?.label === "Color")?.options[0]
     })
 }
