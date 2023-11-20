@@ -59,6 +59,24 @@ const BestSeller = () => {
 					))}
 				</Slider>
 			</div>
+
+			<div className="flex items-center justify-between mt-3">
+				<div className="relative">
+					<img
+						src="https://digital-world-2.myshopify.com/cdn/shop/files/banner2-home2_2000x_crop_center.png?v=1613166657"
+						alt="banner2"
+					/>
+					<div className="absolute left-0 right-0 top-0 bg-[#ccc] opacity-0 hover:opacity-25 z-10 bottom-0 cursor-pointer "></div>
+				</div>
+
+				<div className="relative">
+					<img
+						src="https://digital-world-2.myshopify.com/cdn/shop/files/banner1-home2_2000x_crop_center.png?v=1613166657"
+						alt="banner1"
+					/>
+					<div className="absolute left-0 right-0 top-0 bg-[#ccc] opacity-0 hover:opacity-25 z-10 bottom-0 cursor-pointer "></div>
+				</div>
+			</div>
 		</div>
 	);
 };
