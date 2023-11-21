@@ -28,7 +28,8 @@ const insertData = async (product) => {
 const insertCategoriesData = async (cate) => {
     await ProductCategory.create({
         category: cate?.category,
-        brand: cate?.products
+        brand: cate?.products,
+        image: cate?.image
     })
 
 }

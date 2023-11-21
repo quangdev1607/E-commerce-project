@@ -7,7 +7,9 @@ const path = {
     BLOGS: 'blogs',
     FAQs: 'faqs',
     CONTACT: 'contact',
-    SERVICES: 'services'
+    SERVICES: 'services',
+    DETAIL_PRODUCT__PID__TITLE: 'san-pham/:pid/:title',
+    DETAIL_PRODUCT: 'san-pham'
 
 }
 

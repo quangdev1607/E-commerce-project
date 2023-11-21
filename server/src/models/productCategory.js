@@ -10,6 +10,10 @@ const productCategorySchema = new mongoose.Schema({
     brand: {
         type: Array,
         required: true
+    },
+    image: {
+        type: String,
+
     }
 
 }, { timestamps: true });

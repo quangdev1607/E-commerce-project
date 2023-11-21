@@ -5,10 +5,8 @@ import { renderStars, formatCash } from "../utils/helpers";
 import { SelectOption } from "../components";
 import icons from "../utils/icons";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import path from "../utils/path";
 
-const Product = ({ productData, activeTab }) => {
+const ProductDisplay = ({ productData, activeTab }) => {
 	const [isShowedOption, setIsShowedOption] = useState(false);
 	const { FaHeart, FiMenu, FaEye } = icons;
 	return (
@@ -22,7 +20,7 @@ const Product = ({ productData, activeTab }) => {
 					e.stopPropagation();
 					setIsShowedOption(false);
 				}}
-				className="border w-full h-[380px] p-4"
+				className="border w-full  p-4"
 			>
 				{isShowedOption && (
 					<div
@@ -33,36 +31,22 @@ const Product = ({ productData, activeTab }) => {
 						<SelectOption icon={<FaEye />} />
 					</div>
 				)}
-				<Link to={`/${path.DETAIL_PRODUCT}/${productData._id}/${productData.title}`}>
-					<img
-						className="  w-full h-[205px] object-contain "
-						src={productData?.thumbnail || notFoundProductImg}
-						alt="product"
-					/>
-				</Link>
 
-				{activeTab === 1 ? (
-					<img
-						className="absolute overflow-visible w-[80px] h-[60px] top-[3px] left-[7px]"
-						src={labelProduct}
-						alt="label"
-					/>
-				) : (
-					<img
-						className="absolute overflow-visible w-[130px] h-[70px] top-[2px] left-0"
-						src={newProduct}
-						alt="label"
-					/>
-				)}
+				<img
+					className="  w-full  object-contain "
+					src={productData?.thumbnail || notFoundProductImg}
+					alt="product"
+				/>
+
+				<img
+					className="absolute overflow-visible w-[130px] h-[70px] top-[2px] left-0"
+					src={newProduct}
+					alt="label"
+				/>
 
 				<div className="flex flex-col gap-3 pt-5 mt-6">
 					<span className="flex h-4">{renderStars(productData.totalRatings)}</span>
-					<Link
-						to={`/${path.DETAIL_PRODUCT}/${productData._id}/${productData.title}`}
-						className="line-clamp-1 hover:text-main"
-					>
-						{productData.title}
-					</Link>
+					<span className="line-clamp-1">{productData.title}</span>
 					<span>{`${formatCash(productData.price.toString())} VNĐ`}</span>
 				</div>
 			</div>
@@ -70,4 +54,4 @@ const Product = ({ productData, activeTab }) => {
 	);
 };
 
-export default Product;
+export default ProductDisplay;

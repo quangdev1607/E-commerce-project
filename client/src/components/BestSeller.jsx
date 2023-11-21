@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Slider from "react-slick";
 import { apiGetProducts } from "../api";
-import { Product } from "../components";
+import { CustomSlider } from "./";
 
 const tabs = [
 	{ id: 1, name: "best seller" },
 	{ id: 2, name: "new arrivals" },
 ];
-
-const settings = {
-	dots: false,
-	infinite: false,
-	speed: 700,
-	slidesToShow: 3,
-	slidesToScroll: 3,
-};
 
 const BestSeller = () => {
 	const [bestSellers, setBestSellers] = useState([]);
@@ -53,11 +44,7 @@ const BestSeller = () => {
 				))}
 			</div>
 			<div className="mt-4 mx-[-10px]">
-				<Slider {...settings}>
-					{products.map((product) => (
-						<Product key={product._id} activeTab={activeTab} productData={product} />
-					))}
-				</Slider>
+				<CustomSlider products={products} activeTab={activeTab} />
 			</div>
 
 			<div className="flex items-center justify-between mt-3">

@@ -1,4 +1,3 @@
-import React, { memo, useState, useEffect } from "react";
 import {
 	Sidebar,
 	Banner,
@@ -6,6 +5,9 @@ import {
 	DealDaily,
 	Featured,
 	Advertising,
+	ProductSlider,
+	HotCollections,
+	BlogPost,
 } from "../../components/index";
 
 const Home = () => {
@@ -21,17 +23,23 @@ const Home = () => {
 					<BestSeller />
 				</div>
 			</div>
-			<div className="w-full h-auto ">
-				<section className="w-full py-[15px] pr-[15px] border-b-2  border-main">
-					<span className=" uppercase font-semibold text-[20px] ">Featured Product</span>
-				</section>
+			<div className="w-full ">
 				<Featured />
 				<Advertising />
 			</div>
 
-			<div className="w-full h-[500px]"></div>
+			<div className="w-full">
+				<ProductSlider />
+			</div>
+
+			<div className="w-full">
+				<HotCollections />
+			</div>
+			<div className="w-full">
+				<BlogPost />
+			</div>
 		</>
 	);
 };
 
-export default memo(Home);
+export default Home;
