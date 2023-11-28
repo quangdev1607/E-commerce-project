@@ -1,11 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { InputFields, Button } from "../../components";
 import { Link, useNavigate } from "react-router-dom";
 import path from "../../utils/path";
 import { apiRegister, apiLogin, apiForgotPassword } from "../../api/user";
 import Swal from "sweetalert2";
-import { register } from "../../store/user/userSlice";
+import { login } from "../../store/user/userSlice";
 import { useDispatch } from "react-redux";
+import { validate } from "../../utils/helpers";
 
 const Login = () => {
   const initialState = {
@@ -24,36 +25,45 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
 
+  const [invalidFields, setInvalidFields] = useState([]);
+
   // Clear input
   const resetPayload = () => {
     setPayLoad(initialState);
   };
+
+  useEffect(() => {
+    setPayLoad(initialState);
+    setInvalidFields([]);
+  }, [isLogin]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   //Handle Submit
   const handleSubmit = useCallback(async () => {
     const { firstname, lastname, mobile, ...data } = payLoad;
+    const invalids = isLogin ? validate(data, setInvalidFields) : validate(payLoad, setInvalidFields);
     // Login
-    if (isLogin) {
-      const response = await apiLogin(data);
-      console.log(response);
-      if (response.success) {
-        dispatch(register({ isLoggedIn: true, token: response.accessToken, current: response.userData }));
-        navigate(`/${path.HOME}`);
-      } else Swal.fire("Oops!", response.msg, "error");
-    }
+    if (invalids === 0) {
+      if (isLogin) {
+        const response = await apiLogin(data);
+        if (response.success) {
+          dispatch(login({ isLoggedIn: true, token: response.accessToken, current: response.userData }));
+          navigate(`/${path.HOME}`);
+        } else Swal.fire("Oops!", response.msg, "error");
+      }
 
-    //Register
-    if (!isLogin) {
-      const response = await apiRegister(payLoad);
-      console.log(response);
-      if (response.success)
-        Swal.fire("Congratulation", response.msg, "success").then(() => {
-          resetPayload();
-          setIsLogin(true);
-        });
-      else Swal.fire("Oops!", response.msg, "error");
+      //Register
+      if (!isLogin) {
+        const response = await apiRegister(payLoad);
+        console.log(response);
+        if (response.success)
+          Swal.fire("Email sent!", response.msg, "info").then(() => {
+            resetPayload();
+            setIsLogin(true);
+          });
+        else Swal.fire("Oops!", response.msg, "error");
+      }
     }
   }, [payLoad]);
 
@@ -102,14 +112,51 @@ const Login = () => {
           <div className="p-5 flex flex-col items-start gap-5 ">
             {!isLogin && (
               <div className="flex gap-2">
-                <InputFields type={"text"} nameKey="firstname" setValue={setPayLoad} value={payLoad.firstname} />
-                <InputFields type={"text"} nameKey="lastname" setValue={setPayLoad} value={payLoad.lastname} />
+                <InputFields
+                  type={"text"}
+                  nameKey="firstname"
+                  setValue={setPayLoad}
+                  value={payLoad.firstname}
+                  invalidFields={invalidFields}
+                  setInvalidFields={setInvalidFields}
+                />
+                <InputFields
+                  type={"text"}
+                  nameKey="lastname"
+                  setValue={setPayLoad}
+                  value={payLoad.lastname}
+                  invalidFields={invalidFields}
+                  setInvalidFields={setInvalidFields}
+                />
               </div>
             )}
-            {!isLogin && <InputFields type={"text"} nameKey="mobile" setValue={setPayLoad} value={payLoad.mobile} />}
+            {!isLogin && (
+              <InputFields
+                type={"text"}
+                nameKey="mobile"
+                setValue={setPayLoad}
+                value={payLoad.mobile}
+                invalidFields={invalidFields}
+                setInvalidFields={setInvalidFields}
+              />
+            )}
 
-            <InputFields type={"text"} nameKey="email" setValue={setPayLoad} value={payLoad.email} />
-            <InputFields type={"password"} nameKey="password" setValue={setPayLoad} value={payLoad.password} />
+            <InputFields
+              type={"text"}
+              nameKey="email"
+              setValue={setPayLoad}
+              value={payLoad.email}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
+            />
+            <InputFields
+              type={"password"}
+              nameKey="password"
+              setValue={setPayLoad}
+              value={payLoad.password}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
+            />
 
             {isLogin && (
               <span
@@ -133,7 +180,6 @@ const Login = () => {
                 Not a member?{" "}
                 <Link
                   onClick={() => {
-                    resetPayload();
                     setIsLogin(false);
                   }}
                   className="text-blue-400"
@@ -148,7 +194,6 @@ const Login = () => {
                 Already have account?{" "}
                 <Link
                   onClick={() => {
-                    resetPayload();
                     setIsLogin(true);
                   }}
                   className="text-blue-400"
