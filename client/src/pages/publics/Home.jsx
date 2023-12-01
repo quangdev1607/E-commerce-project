@@ -23,19 +23,19 @@ const Home = () => {
           <BestSeller />
         </div>
       </div>
-      <div className="w-full ">
+      <div className="w-main ">
         <Featured />
         <Advertising />
       </div>
 
-      <div className="w-full">
+      <div className="w-main">
         <ProductSlider />
       </div>
 
-      <div className="w-full">
+      <div className="w-main">
         <HotCollections />
       </div>
-      <div className="w-full">
+      <div className="w-main">
         <BlogPost />
       </div>
     </>

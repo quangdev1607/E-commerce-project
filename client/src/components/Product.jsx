@@ -1,11 +1,11 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import notFoundProductImg from "../assets/image-not-available.png";
 import labelProduct from "../assets/label.png";
 import newProduct from "../assets/new-product.png";
-import { renderStars, formatCash } from "../utils/helpers";
 import { SelectOption } from "../components";
+import { formatCash, renderStars } from "../utils/helpers";
 import icons from "../utils/icons";
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import path from "../utils/path";
 
 const Product = ({ productData, activeTab }) => {
@@ -33,7 +33,7 @@ const Product = ({ productData, activeTab }) => {
             <SelectOption icon={<FaEye />} />
           </div>
         )}
-        <Link to={`/${path.DETAIL_PRODUCT}/${productData._id}/${productData.title}`}>
+        <Link to={`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`}>
           <img
             className="  w-full h-[205px] object-contain "
             src={productData?.thumbnail || notFoundProductImg}
@@ -54,7 +54,7 @@ const Product = ({ productData, activeTab }) => {
         <div className="flex flex-col gap-3 pt-3 mt-3">
           <span className="flex h-4">{renderStars(productData.totalRatings)}</span>
           <Link
-            to={`/${path.DETAIL_PRODUCT}/${productData._id}/${productData.title}`}
+            to={`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`}
             className="line-clamp-1 hover:text-main"
           >
             {productData.title}

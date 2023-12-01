@@ -1,24 +1,24 @@
-import "./App.css";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 import {
-  Home,
-  Login,
-  Public,
-  Products,
   Blogs,
-  Services,
-  FAQ,
   Contact,
   DetailProduct,
+  FAQ,
+  Home,
+  Login,
+  Products,
+  Public,
   RegisterVerification,
   ResetPassword,
+  Services,
 } from "./pages/publics";
-import path from "./utils/path";
 import { getCategories } from "./store/app/asyncActions";
-import { useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import path from "./utils/path";
 
 function App() {
   const dispatch = useDispatch();
@@ -35,7 +35,7 @@ function App() {
           <Route path={path.FAQs} element={<FAQ />}></Route>
           <Route path={path.SERVICES} element={<Services />}></Route>
           <Route path={path.CONTACT} element={<Contact />}></Route>
-          <Route path={path.DETAIL_PRODUCT__PID__TITLE} element={<DetailProduct />}></Route>
+          <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}></Route>
         </Route>
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />}></Route>
         <Route path={path.REGISTER_VERIFICATION} element={<RegisterVerification />}></Route>

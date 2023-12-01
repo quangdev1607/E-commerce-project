@@ -1,7 +1,14 @@
-import axios from '../axiosCofig'
+import axios from "../axiosCofig";
 
-export const apiGetProducts = (params) => axios({
-    url: '/product',
-    method: 'get',
-    params
-})
+export const apiGetProducts = (params) =>
+  axios({
+    url: "/product",
+    method: "get",
+    params,
+  });
+
+export const apiGetSingleProduct = (pid) =>
+  axios({
+    url: "/product/" + pid,
+    method: "get",
+  });
