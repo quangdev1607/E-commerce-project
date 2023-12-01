@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import appSlice from "./app/appSlice";
-import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import appSlice from "./app/appSlice";
 import userSlice from "./user/userSlice";
 const commonConfig = {
   key: "shop/user",
   storage,
+  throttle: 500,
 };
 
 const userConfig = {

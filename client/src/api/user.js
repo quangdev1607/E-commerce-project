@@ -28,3 +28,21 @@ export const apiResetPassword = (data) =>
     method: "put",
     data,
   });
+
+export const apiVerifyAccount = (token) =>
+  axios({
+    url: "/user/register-verification/" + token,
+    method: "put",
+  });
+
+export const apiGetCurrentUser = () =>
+  axios({
+    url: "/user/current",
+    method: "get",
+  });
+
+export const apiLogout = () =>
+  axios({
+    url: "/user/logout",
+    method: "get",
+  });

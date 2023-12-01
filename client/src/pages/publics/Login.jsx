@@ -1,12 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
-import { InputFields, Button } from "../../components";
-import { Link, useNavigate } from "react-router-dom";
-import path from "../../utils/path";
-import { apiRegister, apiLogin, apiForgotPassword } from "../../api/user";
-import Swal from "sweetalert2";
-import { login } from "../../store/user/userSlice";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { apiForgotPassword, apiLogin, apiRegister, apiVerifyAccount } from "../../api/user";
+import { Button, InputFields } from "../../components";
+import { login } from "../../store/user/userSlice";
 import { validate } from "../../utils/helpers";
+import path from "../../utils/path";
 
 const Login = () => {
   const initialState = {
@@ -26,6 +26,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
 
   const [invalidFields, setInvalidFields] = useState([]);
+
+  const [isVerifyEmail, setIsVerifyEmail] = useState(false);
+
+  const [token, setToken] = useState("");
 
   // Clear input
   const resetPayload = () => {
@@ -56,11 +60,11 @@ const Login = () => {
       //Register
       if (!isLogin) {
         const response = await apiRegister(payLoad);
-        console.log(response);
         if (response.success)
           Swal.fire("Email sent!", response.msg, "info").then(() => {
             resetPayload();
             setIsLogin(true);
+            setIsVerifyEmail(true);
           });
         else Swal.fire("Oops!", response.msg, "error");
       }
@@ -77,9 +81,50 @@ const Login = () => {
       });
     else Swal.fire("Oops", response.msg, "error");
   };
+
+  // Verify account
+  const verifyAccount = async () => {
+    const response = await apiVerifyAccount(token);
+    if (response.success)
+      Swal.fire("Congratulation", response.msg, "success").then(() => {
+        setIsVerifyEmail(false);
+      });
+    else Swal.fire("Oops!", "Verified token is not valid", "error");
+    setToken("");
+  };
   //-------------------------------------------------------------------------------------------------------------
   return (
     <main className="relative w-full min-h-screen flex justify-center items-center bg-gradient-to-r from-purple-600 to-blue-600">
+      {isVerifyEmail && (
+        <section className="absolute  top-0 left-0 bottom-0 right-0 flex flex-col items-center justify-center bg-black bg-opacity-90  z-50 ">
+          <div className="bg-white w-[500px] p-8 rounded-md flex items-center justify-center flex-col gap-3">
+            <label htmlFor="code">Enter the verification code from your email: </label>
+            <input
+              type="text"
+              id="code"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              className="p-2 border outline-none w-full"
+            />
+            <div className="flex justify-center items-center gap-2">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-md text-white bg-main text-semibold hover:opacity-70"
+                onClick={() => setIsVerifyEmail(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-md text-white bg-green-500 text-semibold hover:opacity-70"
+                onClick={verifyAccount}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
       {isForgotPassword && (
         <div className="absolute py-8 top-0 left-0 bottom-0 right-0 flex flex-col items-center bg-white animate-slide-bottom ">
           <div className="flex flex-col gap-4">
@@ -174,7 +219,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="w-full flex items-center justify-center pb-5">
+          <div className="w-full flex flex-col items-center justify-center  pb-5">
             {isLogin && (
               <span>
                 Not a member?{" "}
@@ -202,6 +247,9 @@ const Login = () => {
                 </Link>
               </span>
             )}
+            <Link className=" cursor-pointer hover:opacity-70" to={`/${path.HOME}`}>
+              Go home
+            </Link>
           </div>
         </form>
       </div>

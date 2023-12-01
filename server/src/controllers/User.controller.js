@@ -3,7 +3,6 @@ const User = require("../models/user");
 const { BadRequestError, UnAuthenticatedError, NotFoundError } = require("../errors");
 const { createAccessToken, createRefreshToken } = require("../middlewares/jwt");
 const jwt = require("jsonwebtoken");
-const sender = require("../utils/sendMail");
 const sendMail = require("../utils/sendMail");
 const crypto = require("crypto");
 
@@ -37,36 +36,39 @@ class UserController {
     if (existedUser) throw new BadRequestError("user has existed!");
 
     const token = crypto.randomUUID();
-    res.cookie("registerData", { ...req.body, token }, { httpOnly: true, maxAge: 15 * 60 * 1000 });
-    const html = `Please click the following link to verify your account. This link will be expired in 15 minutes from now. <a href=${process.env.SERVER_URL}/api/user/register-verification/${token}>Click here to verify</a>`;
+    const editedEmail = btoa(email) + "@" + token;
+    const tempUser = await User.create({ ...req.body, email: editedEmail });
+    const html = `<h2>Register Code: </h2><blockquote>${token}</blockquote>`;
     const data = {
       email,
       html,
-      subject: "Verify account",
+      subject: "Verify your account",
     };
     await sendMail(data);
+
+    setTimeout(async () => {
+      await User.deleteOne({ email: editedEmail });
+    }, [300000]);
     return res.status(StatusCodes.OK).json({
-      success: true,
-      msg: "Check your inbox to verify your account",
+      success: tempUser ? true : false,
+      msg: tempUser ? "Check your inbox to verify your account" : "Something went wrong",
     });
   }
 
   async handleRegister(req, res) {
-    const cookie = req.cookies;
-    const { verifiedToken } = req.params;
+    const { token } = req.params;
 
-    if (!cookie || cookie?.registerData?.token !== verifiedToken) {
-      res.clearCookie("registerData");
-      return res.redirect(`${process.env.CLIENT_URL}/register-verification/fail`);
-    }
-    // throw new NotFoundError("Register failed");
+    const newUser = await User.findOne({ email: new RegExp(`${token}$`) });
 
-    const { token, ...userData } = cookie.registerData;
-    const user = await User.create({ ...userData });
+    if (!newUser) throw new NotFoundError("User with this email is not found");
 
-    res.clearCookie("registerData");
-    if (user) return res.redirect(`${process.env.CLIENT_URL}/register-verification/success`);
-    else return res.redirect(`${process.env.CLIENT_URL}/register-verification/fail`);
+    newUser.email = atob(newUser?.email?.split("@")[0]);
+    newUser.save();
+
+    return res.status(StatusCodes.OK).json({
+      success: newUser ? true : false,
+      msg: newUser ? "Your account has been created successfully" : "Fail",
+    });
   }
 
   async logIn(req, res) {

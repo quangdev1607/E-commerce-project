@@ -1,19 +1,19 @@
 import {
-  Sidebar,
+  Advertising,
   Banner,
   BestSeller,
+  BlogPost,
   DealDaily,
   Featured,
-  Advertising,
-  ProductSlider,
   HotCollections,
-  BlogPost,
+  ProductSlider,
+  Sidebar,
 } from "../../components/index";
 
 const Home = () => {
   return (
     <>
-      <div className="w-main flex">
+      <div className="w-main flex mt-5">
         <div className=" w-[25%] flex flex-col flex-auto gap-5">
           <Sidebar />
           <DealDaily />

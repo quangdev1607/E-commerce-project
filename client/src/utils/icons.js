@@ -1,24 +1,25 @@
-import { FaPhone, FaUser, FaShoppingCart, FaHeadphones, FaHeart, FaEye } from "react-icons/fa";
-import { IoIosMail } from "react-icons/io";
 import { AiFillHome, AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { FiSmartphone, FiTablet, FiPrinter, FiMenu } from "react-icons/fi";
 import { BsLaptopFill } from "react-icons/bs";
+import { FaEye, FaHeadphones, FaHeart, FaPhone, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FiMenu, FiPrinter, FiSmartphone, FiTablet } from "react-icons/fi";
+import { GrLogout } from "react-icons/gr";
+import { IoIosMail } from "react-icons/io";
 import { PiTelevisionFill } from "react-icons/pi";
 
 const icons = {
-    FaPhone,
-    IoIosMail,
-    FaUser,
-    FaShoppingCart,
-    AiFillHome,
-    AiFillStar,
-    AiOutlineStar,
-    FaHeart,
-    FiMenu,
-    FaEye
+  FaPhone,
+  IoIosMail,
+  FaUser,
+  FaShoppingCart,
+  AiFillHome,
+  AiFillStar,
+  AiOutlineStar,
+  FaHeart,
+  FiMenu,
+  FaEye,
+  GrLogout,
+};
 
-}
+export const categoriesIcon = [FiSmartphone, FiTablet, BsLaptopFill, FaHeadphones, PiTelevisionFill, FiPrinter];
 
-export const categoriesIcon = [FiSmartphone, FiTablet, BsLaptopFill, FaHeadphones, PiTelevisionFill, FiPrinter]
-
-export default icons
+export default icons;

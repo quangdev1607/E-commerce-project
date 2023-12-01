@@ -18,7 +18,7 @@ const router = require("express").Router();
 const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 
 router.post("/register", register);
-router.get("/register-verification/:verifiedToken", handleRegister);
+router.put("/register-verification/:token", handleRegister);
 router.post("/forgotpassword", forgotPassword);
 router.put("/resetpassword", resetPassword);
 router.post("/login", logIn);

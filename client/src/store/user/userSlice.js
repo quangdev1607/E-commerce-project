@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getCurrent } from "./asyncActions";
 
 export const userSlice = createSlice({
   name: "user",
@@ -12,27 +13,29 @@ export const userSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.isLoggedIn = action.payload.isLoggedIn;
-      state.current = action.payload.userData;
       state.token = action.payload.token;
+    },
+    logout: (state, action) => {
+      (state.isLoggedIn = false), (state.token = null);
     },
   },
 
-  // extraReducers: (builder) => {
-  //   builder.addCase(actions.getCategories.pending, (state) => {
-  //     state.isLoading = true;
-  //   });
+  extraReducers: (builder) => {
+    builder.addCase(getCurrent.pending, (state) => {
+      state.isLoading = true;
+    });
 
-  //   builder.addCase(actions.getCategories.fulfilled, (state, action) => {
-  //     state.isLoading = false;
-  //     state.categories = action.payload.categories;
-  //   });
+    builder.addCase(getCurrent.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.current = action.payload;
+    });
 
-  //   builder.addCase(actions.getCategories.rejected, (state, action) => {
-  //     state.isLoading = false;
-  //     state.errorMessage = action.payload.message;
-  //   });
-  // },
+    builder.addCase(getCurrent.rejected, (state, action) => {
+      state.isLoading = false;
+      state.current = null;
+    });
+  },
 });
 
-export const { login } = userSlice.actions;
+export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;
