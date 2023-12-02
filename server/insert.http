@@ -1,5 +1,5 @@
-###
+### Products
 POST http://localhost:3000/api/insert
 
-###
+### Category
 POST http://localhost:3000/api/insert/category
