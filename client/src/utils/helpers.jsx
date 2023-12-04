@@ -19,14 +19,18 @@ export const renderStars = (starNumber) => {
   return stars;
 };
 
-export const formatCash = (str) => {
-  return str
-    .split("")
-    .reverse()
-    .reduce((prev, next, index) => {
-      return (index % 3 ? next : next + ",") + prev;
-    });
-};
+// export const formatCash = (str) => {
+//   return str
+//     .split("")
+//     .reverse()
+//     .reduce((prev, next, index) => {
+//       return (index % 3 ? next : next + ",") + prev;
+//     });
+// };
+
+export const formatCash = (number) => Number(number?.toFixed(1)).toLocaleString();
+
+export const roundCash = (number) => Math.round(number / 1000) * 1000;
 
 export const secondsToMs = (d) => {
   d = Number(d) / 1000;

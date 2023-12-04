@@ -1,9 +1,9 @@
-import icons from "../utils/icons";
-import { useState, useEffect, memo } from "react";
-import { apiGetProducts } from "../api";
-import { formatCash, renderStars, secondsToMs } from "../utils/helpers";
-import { CountDown } from "../components";
 import moment from "moment";
+import { memo, useEffect, useState } from "react";
+import { apiGetProducts } from "../api";
+import { CountDown } from "../components";
+import { formatCash, renderStars, roundCash, secondsToMs } from "../utils/helpers";
+import icons from "../utils/icons";
 const DealDaily = () => {
   const { AiFillStar, FiMenu } = icons;
   const [dailyDealProduct, setDailyDealProduct] = useState(null);
@@ -80,7 +80,7 @@ const DealDaily = () => {
         <section className="flex flex-col items-center gap-y-3">
           <span>{dailyDealProduct?.title}</span>
           <span className="flex">{renderStars(dailyDealProduct?.totalRatings)}</span>
-          {dailyDealProduct && <span>{`${formatCash(dailyDealProduct.price.toString())} VNĐ`}</span>}
+          {dailyDealProduct && <span>{`${formatCash(roundCash(dailyDealProduct?.price))} VND`}</span>}
         </section>
 
         <section className="flex justify-evenly items-center gap-2">

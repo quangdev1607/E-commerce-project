@@ -4,7 +4,7 @@ import notFoundProductImg from "../assets/image-not-available.png";
 import labelProduct from "../assets/label.png";
 import newProduct from "../assets/new-product.png";
 import { SelectOption } from "../components";
-import { formatCash, renderStars } from "../utils/helpers";
+import { formatCash, renderStars, roundCash } from "../utils/helpers";
 import icons from "../utils/icons";
 import path from "../utils/path";
 
@@ -59,7 +59,7 @@ const Product = ({ productData, activeTab }) => {
           >
             {productData.title}
           </Link>
-          <span>{`${formatCash(productData.price.toString())} VNĐ`}</span>
+          <span>{`${formatCash(roundCash(productData?.price))} VND`}</span>
         </div>
       </div>
     </div>

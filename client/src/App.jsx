@@ -30,12 +30,12 @@ function App() {
       <Routes>
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />}></Route>
-          <Route path={path.PRODUCTS} element={<Products />}></Route>
           <Route path={path.BLOGS} element={<Blogs />}></Route>
           <Route path={path.FAQs} element={<FAQ />}></Route>
           <Route path={path.SERVICES} element={<Services />}></Route>
           <Route path={path.CONTACT} element={<Contact />}></Route>
           <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}></Route>
+          <Route path={path.PRODUCTS} element={<Products />}></Route>
         </Route>
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />}></Route>
         <Route path={path.REGISTER_VERIFICATION} element={<RegisterVerification />}></Route>
