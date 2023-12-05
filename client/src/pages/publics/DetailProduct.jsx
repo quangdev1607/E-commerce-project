@@ -73,9 +73,9 @@ const DetailProduct = () => {
         <div className="w-2/5 flex flex-col gap-4">
           <img src={product?.thumbnail} alt="thumb" className="border h-[458px] w-[458px] object-cover" />
           <div className="w-[458px]">
-            <Slider className="image-slider " {...settings}>
+            <Slider className="image-slider" {...settings}>
               {product?.images.map((el, idx) => (
-                <img src={el} key={idx} className="border" alt={`image ${idx}`} />
+                <img src={el} key={idx} className="w-[143px] h-[143px] object-cover border" alt={`image ${idx}`} />
               ))}
             </Slider>
           </div>

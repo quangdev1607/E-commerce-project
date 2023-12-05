@@ -1,11 +1,21 @@
 import React, { memo, useEffect, useState } from "react";
 import { createSearchParams, useNavigate, useParams } from "react-router-dom";
+import { apiGetProducts } from "../api";
+import { PriceFilter } from "../components";
 import { colors } from "../utils/constants";
 import icons from "../utils/icons";
 
 const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" }) => {
   const { FaAngleDown } = icons;
   const [selected, setSelected] = useState([]);
+  const [highestPrice, setHighestPrice] = useState(0);
+  const [lowestPrice, setLowestPrice] = useState(0);
+  const [priceValues, setPriceValues] = useState([lowestPrice, highestPrice]);
+  const [isSubmitPriceFilter, setIsSubmitPriceFilter] = useState(false);
+
+  const handleSubmitPriceFilter = () => {
+    setIsSubmitPriceFilter(!isSubmitPriceFilter);
+  };
 
   const handleSelect = (e) => {
     const alreadySelected = selected.some((el) => el === e.target.value);
@@ -14,14 +24,45 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
   };
   const { category } = useParams();
   const navigate = useNavigate();
+
   useEffect(() => {
-    navigate({
-      pathname: `/${category}`,
-      search: createSearchParams({
-        color: selected.map((item) => item.toUpperCase()),
-      }).toString(),
-    });
+    if (selected.length > 0)
+      navigate({
+        pathname: `/${category}`,
+        search: createSearchParams({
+          color: selected.map((item) => item.toUpperCase()).join(","),
+        }).toString(),
+      });
+    else navigate(`/${category}`);
   }, [selected]);
+
+  useEffect(() => {
+    const data = {};
+    if (priceValues.some((el) => el !== 0)) {
+      data.from = priceValues[0];
+      data.to = priceValues[1];
+      navigate({
+        pathname: `/${category}`,
+        search: createSearchParams(data).toString(),
+      });
+    }
+  }, [isSubmitPriceFilter]);
+
+  const fetchHighestPriceProduct = async () => {
+    const response = await apiGetProducts({ sort: "-price", limit: 1 });
+    if (response.success) setHighestPrice(response.data[0].price);
+  };
+
+  const fetchLowestPriceProduct = async () => {
+    const response = await apiGetProducts({ sort: "price", limit: 1 });
+    if (response.success) setLowestPrice(response.data[0].price);
+  };
+
+  useEffect(() => {
+    fetchLowestPriceProduct();
+    fetchHighestPriceProduct();
+    setPriceValues([lowestPrice, highestPrice]);
+  }, []);
 
   return (
     <div
@@ -33,7 +74,7 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
       {activeFilter === name && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className=" cursor-default z-10 absolute top-[calc(100%+3px)] left-[-1px] w-fit p-4 bg-white  border border-black min-w-[150px]"
+          className=" cursor-default z-10 absolute top-[calc(100%+3px)] left-[-1px] w-fit p-4 bg-white border border-black min-w-[150px]"
         >
           {type === "checkbox" && (
             <div>
@@ -68,6 +109,18 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
                 ))}
               </div>
             </div>
+          )}
+
+          {type === "input" && (
+            <PriceFilter
+              minPrice={priceValues[0]}
+              maxPrice={priceValues[1]}
+              minStart={lowestPrice}
+              maxStart={highestPrice}
+              changePriceValue={setPriceValues}
+              priceValues={priceValues}
+              handleSubmitPriceFilter={handleSubmitPriceFilter}
+            />
           )}
         </div>
       )}

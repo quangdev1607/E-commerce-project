@@ -59,7 +59,34 @@ export const productsInfo = [
     content:
       "PAYMENT Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quis viverra mi. Ut dignissim, ipsum sit amet varius semper, libero dolor varius sapien, vitae venenatis mauris metus vel tortor. Phasellus tincidunt eros sed risus dictum posuere. Proin quis tincidunt magna. Nullam at tincidunt sapien. Sed vehicula, nibh id suscipit congue, erat ante placerat tortor, quis placerat arcu felis et ipsum. Praesent aliquam dolor urna, at aliquet odio blandit a. Ut pretium nisi quis ante pellentesque vulputate. Pellentesque eget euismod dui. Vivamus vel mattis neque. Nulla nec maximus velit. Pellentesque maximus tincidunt tincidunt. Proin eget eros nec sem ornare finibus quis vitae magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quis viverra mi. Ut dignissim, ipsum sit amet varius semper, libero dolor varius sapien, vitae venenatis mauris metus vel tortor. Phasellus tincidunt eros sed risus dictum posuere. Proin quis tincidunt magna. Nullam at tincidunt sapien. Sed vehicula, nibh id suscipit congue, erat ante placerat tortor, quis placerat arcu felis et ipsum. Praesent aliquam dolor urna, at aliquet odio blandit a. Ut pretium nisi quis ante pellentesque vulputate. Pellentesque eget euismod dui. Vivamus vel mattis neque. Nulla nec maximus velit. Pellentesque maximus tincidunt tincidunt. Proin eget eros nec sem ornare finibus quis vitae magna.",
   },
-  { id: 5, name: "Customer Review", content: "REVIEW" },
 ];
 
 export const colors = ["black", "gold", "quite black", "silver", "dazzling white", "space gray", "red", "white"];
+
+export const options = [
+  {
+    id: 1,
+    value: "sold",
+    text: "Best selling",
+  },
+  {
+    id: 2,
+    value: "-createdAt",
+    text: "Latest",
+  },
+  {
+    id: 3,
+    value: "createdAt",
+    text: "Oldest",
+  },
+  {
+    id: 4,
+    value: "price",
+    text: "Low to high",
+  },
+  {
+    id: 5,
+    value: "-price",
+    text: "High to low",
+  },
+];

@@ -19,10 +19,20 @@ const ProductInfo = () => {
             {item.name}
           </span>
         ))}
+        <div
+          onClick={() => setActiveTab(5)}
+          key={5}
+          className={`uppercase p-2 cursor-pointer text-lg  font-normal ${
+            activeTab === 5 ? activeStyles : notActiveStyles
+          }`}
+        >
+          CUSTOMER REVIEW
+        </div>
       </div>
       <div className=" py-4 border">
         <span className=" font-normal">
           {productsInfo.some((el) => el.id === activeTab) && productsInfo[activeTab - 1].content}
+          {activeTab === 5 && <div>Review content</div>}
         </span>
       </div>
     </div>

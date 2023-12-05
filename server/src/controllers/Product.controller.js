@@ -40,13 +40,18 @@ class ProductController {
     let queryString = JSON.stringify(queries);
     queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, (matchEl) => `$${matchEl}`);
     const formatedQueries = JSON.parse(queryString);
-
+    let colorQueryObject = {};
     // Filtering
     if (queries?.title) formatedQueries.title = { $regex: queries.title, $options: "i" };
     if (queries?.brand) formatedQueries.brand = { $regex: queries.brand, $options: "i" };
-    if (queries?.color) formatedQueries.color = { $regex: queries.color, $options: "i" };
-
-    let result = Product.find(formatedQueries);
+    if (queries?.color) {
+      delete formatedQueries.color;
+      const colorArr = queries.color?.split(",");
+      const colorQuery = colorArr.map((el) => ({ color: { $regex: el, $options: "i" } }));
+      colorQueryObject = { $or: colorQuery };
+    }
+    const q = { ...colorQueryObject, ...formatedQueries };
+    let result = Product.find(q);
 
     // Sorting
     if (req.query.sort) {
@@ -81,8 +86,8 @@ class ProductController {
     if (!products) throw new NotFoundError("Product not found");
     res.status(StatusCodes.OK).json({
       success: products ? true : false,
-      data: products ? products : "Something wrong",
       counts: products ? products.length : "Something wrong",
+      data: products ? products : "Something wrong",
     });
   }
 

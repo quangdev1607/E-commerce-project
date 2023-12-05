@@ -62,3 +62,20 @@
   z-index: 10;
   top: 90px;
 }
+
+.slider {
+  width: 100%;
+  height: 5px;
+  background-color: #85aff9;
+  margin-top: 20px;
+}
+
+.slider .thumb {
+  width: 23px;
+  height: 23px;
+  cursor: grab;
+  background: #fff;
+  border-radius: 58%;
+  border: 2px solid #275efe;
+  top: -8px;
+}
