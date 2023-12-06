@@ -19,7 +19,7 @@ const insertData = async (product) => {
     images: product?.images.photos,
     thumbnail: product?.images.thumbnail,
     color: product?.variants?.find((el) => el?.label === "Color")?.options[0],
-    totalRatings: Math.floor(Math.random() * 5 + 1),
+    totalRatings: 0,
   });
 };
 

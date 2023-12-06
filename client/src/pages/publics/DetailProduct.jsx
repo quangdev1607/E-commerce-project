@@ -21,6 +21,7 @@ const DetailProduct = () => {
   const { pid, title, category } = useParams();
 
   const [quantity, setQuantity] = useState(1);
+  const [update, setUpdate] = useState(false);
   const [suggestedProducts, setSuggestedProducts] = useState(null);
 
   const handleQuantity = useCallback(
@@ -47,22 +48,30 @@ const DetailProduct = () => {
     if (response.success) setSuggestedProducts(response.data);
   };
 
+  const fetchProductData = async () => {
+    const response = await apiGetSingleProduct(pid);
+    if (response.success) setProduct(response.productData);
+  };
   useEffect(() => {
-    const fetchProductData = async () => {
-      const response = await apiGetSingleProduct(pid);
-      if (response.success) setProduct(response.productData);
-    };
     if (pid) {
       fetchProductData();
+      window.scrollTo(0, 0);
     }
   }, [pid]);
 
   useEffect(() => {
+    if (pid) fetchProductData();
+  }, [update]);
+
+  const renderUpdate = useCallback(() => {
+    setUpdate(!update);
+  }, [update]);
+
+  useEffect(() => {
     fetchSuggestedProduct();
   }, [product]);
-  console.log(suggestedProducts);
   return (
-    <main className="w-full">
+    <main className="w-full ">
       <section className="flex flex-col items-center h-[81px] bg-[#F7F7F7]">
         <div className="w-main ">
           <h4 className="font-bold text-[18px] ">{title}</h4>
@@ -141,7 +150,13 @@ const DetailProduct = () => {
         </div>
       </section>
       <section className="w-main m-auto  mt-[48px]">
-        <ProductInfo />
+        <ProductInfo
+          productName={product?.title}
+          totalReviews={product?.rating}
+          totalRatings={product?.totalRatings}
+          pid={pid}
+          handleRerender={renderUpdate}
+        />
       </section>
       <div className="w-main m-auto mt-4">
         <h1 className="uppercase font-semibold text-lg border-b-4 border-red-500 ">Other customer also buy:</h1>

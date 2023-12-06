@@ -19,7 +19,7 @@ const DealDaily = () => {
     const response = await apiGetProducts({
       limit: 1,
       page: Math.floor(Math.random() * 10),
-      totalRatings: 5,
+      // totalRatings: 5,
     });
     if (response.success === true) {
       setDailyDealProduct(response.data[0]);
@@ -64,6 +64,7 @@ const DealDaily = () => {
   // 		clearInterval(idInterval);
   // 	};
   // }, [hours, minutes, seconds, isExpiredTime]);
+
   return (
     <div className="w-full border  flex-auto">
       <main className="p-5 flex flex-col gap-y-6">

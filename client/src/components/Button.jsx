@@ -7,7 +7,7 @@ const Button = ({ name, handleOnClick, style, iconBefore, iconAfter }) => {
         e.preventDefault();
         handleOnClick && handleOnClick();
       }}
-      className={style ? style : "px-4 py-2 rounded-md text-white w-full bg-main text-semibold hover:opacity-70"}
+      className={style ? style : "px-4 py-2 rounded-md text-white  bg-main text-semibold hover:opacity-70"}
     >
       {iconBefore}
       <span>{name}</span>

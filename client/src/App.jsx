@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import { Modal } from "./components";
 import {
   Blogs,
   Contact,
@@ -22,11 +23,13 @@ import path from "./utils/path";
 
 function App() {
   const dispatch = useDispatch();
+  const { isShowModal, modalChildren } = useSelector((state) => state.app);
   useEffect(() => {
     dispatch(getCategories());
   }, []);
   return (
-    <div className="min-h-screen font-main ">
+    <div className="relative min-h-screen font-main ">
+      {isShowModal && <Modal>{modalChildren}</Modal>}
       <Routes>
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />}></Route>

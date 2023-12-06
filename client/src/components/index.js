@@ -1,3 +1,5 @@
+import { formToJSON } from "axios";
+
 export { default as Advertising } from "./Advertising";
 export { default as Banner } from "./Banner";
 export { default as BestSeller } from "./BestSeller";
@@ -12,6 +14,7 @@ export { default as Footer } from "./Footer";
 export { default as Header } from "./Header";
 export { default as HotCollections } from "./HotCollections";
 export { default as InputFields } from "./InputFields";
+export { default as Modal } from "./Modal";
 export { default as Navigation } from "./Navigation";
 export { default as PriceFilter } from "./PriceFilter";
 export { default as Product } from "./Product";
@@ -19,8 +22,10 @@ export { default as ProductDisplay } from "./ProductDisplay";
 export { default as ProductInfo } from "./ProductInfo";
 export { default as ProductSlider } from "./ProductSlider";
 export { default as Rating } from "./Rating";
+export { default as RatingSection } from "./RatingSection";
 export { default as SearchItem } from "./SearchItem";
 export { default as SelectOption } from "./SelectOption";
 export { default as Sidebar } from "./Sidebar";
 export { default as SortFilter } from "./SortFilter";
 export { default as TopHeader } from "./TopHeader";
+export { default as VoteBar } from "./VoteBar";

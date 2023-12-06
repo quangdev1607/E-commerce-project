@@ -90,3 +90,26 @@ export const options = [
     text: "High to low",
   },
 ];
+
+export const ratingOptions = [
+  {
+    id: 1,
+    text: "Very bad",
+  },
+  {
+    id: 2,
+    text: "Bad",
+  },
+  {
+    id: 3,
+    text: "Neutral",
+  },
+  {
+    id: 4,
+    text: "Good",
+  },
+  {
+    id: 5,
+    text: "Very good",
+  },
+];
