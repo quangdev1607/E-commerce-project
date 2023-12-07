@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { apiRatingProduct } from "../api";
-import { Button, Rating, RatingSection, VoteBar } from "../components";
+import { Button, RatingSection, ReviewDisplay, VoteBar } from "../components";
 import { showModal } from "../store/app/appSlice";
 import { productsInfo } from "../utils/constants";
 import { renderStars } from "../utils/helpers";
@@ -24,7 +24,7 @@ const ProductInfo = ({ totalRatings, totalReviews, productName, pid, handleReren
       alert("Missing inputs");
       return;
     }
-    await apiRatingProduct({ star, comment, pid });
+    await apiRatingProduct({ star, comment, pid, updatedAt: Date.now() });
     handleRerender();
     dispatch(showModal({ isShowModal: false, modaChildren: null }));
   });
@@ -53,6 +53,7 @@ const ProductInfo = ({ totalRatings, totalReviews, productName, pid, handleReren
       );
     }
   };
+  // console.log(totalReviews);
 
   return (
     <div className=" flex flex-col">
@@ -68,50 +69,49 @@ const ProductInfo = ({ totalRatings, totalReviews, productName, pid, handleReren
             {item.name}
           </span>
         ))}
-        <div
-          onClick={() => setActiveTab(5)}
-          key={5}
-          className={`uppercase p-2 cursor-pointer text-lg  font-normal ${
-            activeTab === 5 ? activeStyles : notActiveStyles
-          }`}
-        >
-          CUSTOMER REVIEW
-        </div>
       </div>
       <div className=" py-4 border">
         <div className=" font-normal">
           {productsInfo.some((el) => el.id === activeTab) && productsInfo[activeTab - 1].content}
-          {activeTab === 5 && (
-            // --------------------------------------------------
-            <>
-              <div className="flex">
-                <div className="flex flex-col flex-4 gap-1  items-center justify-center  border border-red-500">
-                  <span className="text-2xl font-semibold">{`${totalRatings}/5`}</span>
-                  <span className="flex gap-3">{renderStars(totalRatings)}</span>
-                  <span className="underline font-medium text-sm">{`${totalReviews.length} reviews`}</span>
-                </div>
-                {/* --------------------------------------------------------------- */}
-                <div className="flex-6 border flex flex-col p-4 border-red-500">
-                  {Array.from(Array(5).keys())
-                    .reverse()
-                    .map((el) => (
-                      <VoteBar
-                        ratingTotal={totalReviews?.length}
-                        ratingCounts={totalReviews?.filter((i) => i.star === el + 1)?.length}
-                        key={el}
-                        number={el + 1}
-                      />
-                    ))}
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-center p-4 gap-2">
-                <span>How do you rate this product?</span>
-                <Button handleOnClick={() => handleShowRatingSection()} name="Rate now" />
-              </div>
-            </>
-          )}
         </div>
       </div>
+      <>
+        <div className="flex mt-6">
+          <div className="flex flex-col flex-4 gap-1  items-center justify-center  border border-red-500">
+            <span className="text-2xl font-semibold">{`${totalRatings}/5`}</span>
+            <span className="flex gap-3">{renderStars(totalRatings)}</span>
+            <span className="underline font-medium text-sm">{`${totalReviews?.length} reviews`}</span>
+          </div>
+          {/* --------------------------------------------------------------- */}
+          <div className="flex-6 border flex flex-col p-4 border-red-500">
+            {Array.from(Array(5).keys())
+              .reverse()
+              .map((el) => (
+                <VoteBar
+                  ratingTotal={totalReviews?.length}
+                  ratingCounts={totalReviews?.filter((i) => i.star === el + 1)?.length}
+                  key={el}
+                  number={el + 1}
+                />
+              ))}
+          </div>
+        </div>
+        <div className="mx-6 flex flex-col items-center justify-center p-4 gap-2 border-b-2 ">
+          <span>How do you rate this product?</span>
+          <Button handleOnClick={() => handleShowRatingSection()} name="Rate now" />
+        </div>
+        <div className="my-6">
+          {totalReviews?.map((el) => (
+            <ReviewDisplay
+              key={el._id}
+              updatedAt={el.updatedAt}
+              star={el.star}
+              comment={el.comment}
+              name={el.postedBy}
+            />
+          ))}
+        </div>
+      </>
     </div>
   );
 };

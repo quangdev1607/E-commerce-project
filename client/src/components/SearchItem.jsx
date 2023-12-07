@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { createSearchParams, useNavigate, useParams } from "react-router-dom";
+import { createSearchParams, redirect, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { apiGetProducts } from "../api";
 import { PriceFilter } from "../components";
 import { colors } from "../utils/constants";
@@ -25,45 +25,51 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
   const { category } = useParams();
   const navigate = useNavigate();
 
+  const [params] = useSearchParams();
   useEffect(() => {
-    if (selected.length > 0)
-      navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({
-          color: selected.map((item) => item.toUpperCase()).join(","),
-        }).toString(),
-      });
-    else navigate(`/${category}`);
+    let param = [];
+    for (let i of params.entries()) param.push(i);
+    const queries = {};
+    for (let i of param) queries[i[0]] = i[1];
+    if (selected.length > 0) {
+      queries.color = selected.map((item) => item.toUpperCase()).join(",");
+      queries.page = 1;
+    } else delete queries.color;
+    navigate({
+      pathname: `/${category}`,
+      search: createSearchParams(queries).toString(),
+    });
   }, [selected]);
 
   useEffect(() => {
-    const data = {};
     if (priceValues.some((el) => el !== 0)) {
-      data.from = priceValues[0];
-      data.to = priceValues[1];
+      let param = [];
+      for (let i of params.entries()) param.push(i);
+      const queries = {};
+      for (let i of param) queries[i[0]] = i[1];
+      queries.page = 1;
+      queries.from = priceValues[0];
+      queries.to = priceValues[1];
       navigate({
         pathname: `/${category}`,
-        search: createSearchParams(data).toString(),
+        search: createSearchParams(queries).toString(),
       });
     }
   }, [isSubmitPriceFilter]);
 
-  const fetchHighestPriceProduct = async () => {
-    const response = await apiGetProducts({ sort: "-price", limit: 1 });
-    if (response.success) setHighestPrice(response.data[0].price);
-  };
-
-  const fetchLowestPriceProduct = async () => {
-    const response = await apiGetProducts({ sort: "price", limit: 1 });
-    if (response.success) setLowestPrice(response.data[0].price);
+  const fetchProductPrice = async () => {
+    const res = await Promise.all([
+      apiGetProducts({ sort: "price", limit: 1 }),
+      apiGetProducts({ sort: "-price", limit: 1 }),
+    ]);
+    if (res[0].success) setLowestPrice(res[0].data[0].price);
+    if (res[1].success) setHighestPrice(res[1].data[0].price);
   };
 
   useEffect(() => {
-    fetchLowestPriceProduct();
-    fetchHighestPriceProduct();
+    fetchProductPrice();
     setPriceValues([lowestPrice, highestPrice]);
   }, []);
-
   return (
     <div
       onClick={() => changeActiveFilter(name)}

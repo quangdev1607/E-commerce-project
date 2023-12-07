@@ -18,7 +18,7 @@ class ProductController {
   async getSingleProduct(req, res) {
     const { pid } = req.params;
     if (pid.length !== 24) throw new Error("PID is not valid");
-    const product = await Product.findById(pid);
+    const product = await Product.findById(pid).populate("rating.postedBy", "firstname lastname");
     if (!product) throw new NotFoundError("Product not found");
     res.status(StatusCodes.OK).json({
       success: product ? true : false,
@@ -84,9 +84,10 @@ class ProductController {
         */
     const products = await result;
     if (!products) throw new NotFoundError("Product not found");
+    const counts = await Product.find(q).countDocuments();
     res.status(StatusCodes.OK).json({
       success: products ? true : false,
-      counts: products ? products.length : "Something wrong",
+      counts,
       data: products ? products : "Something wrong",
     });
   }
@@ -118,7 +119,7 @@ class ProductController {
 
   async rateProduct(req, res) {
     const { userId } = req.user;
-    const { star, comment, pid } = req.body;
+    const { star, comment, pid, updatedAt } = req.body;
     if (!star || !pid) throw new BadRequestError("missing inputs");
 
     //Trường hợp thằng user đã rate sản phẩm rồi
@@ -129,14 +130,20 @@ class ProductController {
       // update lại star và comment
       await Product.updateOne(
         { rating: { $elemMatch: hasRated } },
-        { $set: { "rating.$.star": star, "rating.$.comment": comment } },
+        {
+          $set: {
+            "rating.$.star": star,
+            "rating.$.comment": comment,
+            "rating.$.updatedAt": updatedAt,
+          },
+        },
         { new: true }
       );
     } else {
       // add star và comment
       await Product.findByIdAndUpdate(
         pid,
-        { $push: { rating: { star, comment, postedBy: userId } } },
+        { $push: { rating: { star, comment, postedBy: userId, updatedAt } } },
         { new: true }
       );
     }

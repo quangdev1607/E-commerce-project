@@ -13,20 +13,11 @@ const { AiFillStar, AiOutlineStar } = icons;
 export const renderStars = (starNumber) => {
   if (!Number(starNumber)) return;
   const stars = [];
-
+  starNumber = Math.round(starNumber);
   for (let i = 0; i < +starNumber; i++) stars.push(<AiFillStar key={crypto.randomUUID()} color="orange" />);
   for (let j = 5; j > +starNumber; j--) stars.push(<AiOutlineStar key={crypto.randomUUID()} color="orange" />);
   return stars;
 };
-
-// export const formatCash = (str) => {
-//   return str
-//     .split("")
-//     .reverse()
-//     .reduce((prev, next, index) => {
-//       return (index % 3 ? next : next + ",") + prev;
-//     });
-// };
 
 export const formatCash = (number) => Number(number?.toFixed(1)).toLocaleString();
 
@@ -71,4 +62,9 @@ export const validate = (payLoad, setInvalidFields) => {
     }
   }
   return invalidFields;
+};
+
+export const generateRange = (start, end) => {
+  const length = end + 1 - start;
+  return Array.from({ length }, (_, index) => start + index);
 };

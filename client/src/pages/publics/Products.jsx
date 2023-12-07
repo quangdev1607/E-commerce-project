@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { createSearchParams, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { apiGetProducts } from "../../api";
-import { BreadCrumb, ProductDisplay, SearchItem, SortFilter } from "../../components";
+import { BreadCrumb, Pagination, ProductDisplay, SearchItem, SortFilter } from "../../components";
 
 const Products = () => {
   const { category } = useParams();
@@ -24,16 +24,17 @@ const Products = () => {
   );
 
   useEffect(() => {
-    if (sort !== "")
+    if (sort !== "") {
       navigate({
         pathname: `/${category}`,
         search: createSearchParams({ sort }).toString(),
       });
+    }
   }, [sort]);
 
   const fetchProductData = async (queries) => {
     const response = await apiGetProducts(queries);
-    if (response.success) setProducts(response.data);
+    if (response.success) setProducts(response);
   };
 
   useEffect(() => {
@@ -47,7 +48,9 @@ const Products = () => {
       delete queries.from;
       delete queries.to;
     }
+
     fetchProductData({ ...priceQuery, ...queries });
+    window.scrollTo(0, 0);
   }, [params]);
 
   const changeActiveFilter = useCallback(
@@ -79,10 +82,13 @@ const Products = () => {
         </div>
       </section>
       <section className="w-main m-auto mt-4 grid grid-cols-4 gap-4">
-        {products?.map((item) => (
+        {products?.data?.map((item) => (
           <ProductDisplay key={item._id} noLabel={true} productData={item} />
         ))}
       </section>
+      <div className="w-full h-[50px]  flex justify-center items-center mt-6">
+        <Pagination totalCount={products?.counts} />
+      </div>
       <div className="w-full h-[500px]"></div>
     </main>
   );
