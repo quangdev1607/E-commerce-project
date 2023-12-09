@@ -5,6 +5,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { Modal } from "./components";
+import { AdminLayout, CreateProducts, DashBoard, ManageOrders, ManageProducts, ManageUsers } from "./pages/admin";
+import { MemberLayout, Personal } from "./pages/member";
 import {
   Blogs,
   Contact,
@@ -39,10 +41,21 @@ function App() {
           <Route path={path.CONTACT} element={<Contact />}></Route>
           <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}></Route>
           <Route path={path.PRODUCTS} element={<Products />}></Route>
+          <Route path={path.ALL} element={<Home />}></Route>
         </Route>
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />}></Route>
         <Route path={path.REGISTER_VERIFICATION} element={<RegisterVerification />}></Route>
         <Route path={path.LOGIN} element={<Login />}></Route>
+        <Route path={path.ADMIN} element={<AdminLayout />}>
+          <Route path={path.DASHBOARD} element={<DashBoard />}></Route>
+          <Route path={path.MANAGE_USER} element={<ManageUsers />}></Route>
+          <Route path={path.MANAGE_PRODUCTS} element={<ManageProducts />}></Route>
+          <Route path={path.CREATE_PRODUCTS} element={<CreateProducts />}></Route>
+          <Route path={path.MANAGE_ORDER} element={<ManageOrders />}></Route>
+        </Route>
+        <Route path={path.MEMBER} element={<MemberLayout />}>
+          <Route path={path.PERSONAL} element={<Personal />}></Route>
+        </Route>
       </Routes>
       <ToastContainer
         position="top-right"

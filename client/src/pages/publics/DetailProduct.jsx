@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Slider from "react-slick";
 import { apiGetProducts, apiGetSingleProduct } from "../../api";
-import { BreadCrumb, Button, ProductDisplay, ProductInfo } from "../../components";
-import SelectQuantity from "../../components/SelectQuantity";
+import { BreadCrumb, Button, ProductDisplay, ProductInfo, SelectQuantity } from "../../components";
 import { formatCash, renderStars, roundCash } from "../../utils/helpers";
 
 import icons from "../../utils/icons";

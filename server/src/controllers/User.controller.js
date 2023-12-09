@@ -34,7 +34,6 @@ class UserController {
     // Duplicate Error:
     const existedUser = await User.findOne({ email });
     if (existedUser) throw new BadRequestError("user has existed!");
-
     const token = crypto.randomUUID();
     const editedEmail = btoa(email) + "@" + token;
     const tempUser = await User.create({ ...req.body, email: editedEmail });
@@ -110,11 +109,72 @@ class UserController {
   }
 
   async allUser(req, res) {
-    const users = await User.find()
+    const queries = { ...req.query };
+
+    const excludedFields = ["limit", "sort", "page", "fields"];
+    excludedFields.forEach((item) => delete queries[item]);
+
+    // Format lại các operator cho đúng cú pháp của Mongodb
+    let queryString = JSON.stringify(queries);
+    queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, (matchEl) => `$${matchEl}`);
+    const formatedQueries = JSON.parse(queryString);
+
+    // Filtering
+    if (queries?.firstname)
+      formatedQueries.firstname = { $regex: queries.firstname, $options: "i" };
+    if (queries?.lastname) formatedQueries.lastname = { $regex: queries.lastname, $options: "i" };
+
+    // const queryUser = {};
+    // if (req.query.q) {
+    //   queryUser = {
+    //     $or: [
+    //       { firstname: { $regex: req.query.q, $options: "i" } },
+    //       { email: { $regex: req.query.q, $options: "i" } },
+    //     ],
+    //   };
+    // }
+    if (req.query.q) {
+      delete formatedQueries.q;
+      formatedQueries["$or"] = [
+        { firstname: { $regex: req.query.q, $options: "i" } },
+        { lastname: { $regex: req.query.q, $options: "i" } },
+        { email: { $regex: req.query.q, $options: "i" } },
+      ];
+    }
+
+    let result = User.find(formatedQueries)
       .populate("cart.product", "title price brand totalRatings")
-      .select("-refreshToken -password -role");
+      .select("-refreshToken -password ");
+
+    // Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      result = result.sort(sortBy);
+    } else {
+      result = result.sort("-createdAt"); // Auto sắp xếp theo latest
+    }
+
+    // Fields
+    if (req.query.fields) {
+      const fieldList = req.query.fields.split(",").join(" ");
+      result = result.select(fieldList);
+    } else {
+      result = result.select("-__v");
+    }
+
+    // Paginations:
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    result = result.skip(skip).limit(limit);
+
+    const users = await result;
+    if (!users) throw new NotFoundError("User not found");
+    const counts = await User.find(formatedQueries).countDocuments();
+
     res.status(StatusCodes.OK).json({
       success: users ? true : false,
+      counts,
       users,
     });
   }
@@ -123,7 +183,7 @@ class UserController {
     const { userId } = req.user;
     const user = await User.findById({ _id: userId })
       .populate("cart.product", "title price brand totalRatings")
-      .select("-refreshToken -password -role");
+      .select("-refreshToken -password");
     return res.status(StatusCodes.OK).json({
       success: user ? true : false,
       result: user ? user : "User not found",
@@ -131,13 +191,12 @@ class UserController {
   }
 
   async deleteUser(req, res) {
-    const { _id } = req.query;
-    if (!_id) throw new BadRequestError("missing inputs");
-    const deletedUser = await User.findByIdAndDelete(_id);
+    const { userId } = req.params;
+    const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) throw new NotFoundError("User not found");
     res.status(StatusCodes.OK).json({
       success: deletedUser ? true : false,
-      deletedUser: deletedUser
+      msg: deletedUser
         ? `User with email ${deletedUser.email} has been deleted`
         : "Something wrong",
     });
@@ -164,7 +223,7 @@ class UserController {
     if (!user) throw new NotFoundError("User not found");
     res.status(StatusCodes.OK).json({
       success: user ? true : false,
-      updatedUser: user ? user : "Somethign wrong",
+      updatedUser: user ? user : "Something wrong",
     });
   }
 

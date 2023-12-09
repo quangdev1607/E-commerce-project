@@ -79,3 +79,11 @@
   border: 2px solid #275efe;
   top: -8px;
 }
+
+.disabled-link {
+  pointer-events: none;
+}
+
+.w500 {
+  width: 500px;
+}

@@ -25,11 +25,11 @@ router.post("/login", logIn);
 router.post("/refreshtoken", refreshToken);
 router.get("/logout", logOut);
 router.get("/current", verifyAccessToken, getOneUser);
-router.get("/", verifyAccessToken, isAdmin, allUser);
-router.delete("/", verifyAccessToken, isAdmin, deleteUser);
+router.get("/", verifyAccessToken, isAdmin, allUser); // All users
 router.put("/update", verifyAccessToken, updateUser);
 router.put("/address", verifyAccessToken, updateUserAddress);
 router.put("/cart", verifyAccessToken, addUserCart);
+router.delete("/:userId", verifyAccessToken, isAdmin, deleteUser);
 router.put("/:userId", verifyAccessToken, isAdmin, updateUserByAdmin);
 
 module.exports = router;

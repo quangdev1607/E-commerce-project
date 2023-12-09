@@ -3,7 +3,8 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { apiForgotPassword, apiLogin, apiRegister, apiVerifyAccount } from "../../api/user";
-import { Button, InputFields } from "../../components";
+import { Button, InputFields, Loading } from "../../components";
+import { showModal } from "../../store/app/appSlice";
 import { login } from "../../store/user/userSlice";
 import { validate } from "../../utils/helpers";
 import path from "../../utils/path";
@@ -51,6 +52,7 @@ const Login = () => {
     if (invalids === 0) {
       if (isLogin) {
         const response = await apiLogin(data);
+
         if (response.success) {
           dispatch(login({ isLoggedIn: true, token: response.accessToken, current: response.userData }));
           navigate(`/${path.HOME}`);
@@ -59,7 +61,10 @@ const Login = () => {
 
       //Register
       if (!isLogin) {
+        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
+
         const response = await apiRegister(payLoad);
+        dispatch(showModal({ isShowModal: false, modalChildren: null }));
         if (response.success)
           Swal.fire("Email sent!", response.msg, "info").then(() => {
             resetPayload();
@@ -130,7 +135,7 @@ const Login = () => {
           <div className="flex flex-col gap-4">
             <label htmlFor="email">Email:</label>
             <input
-              className="w-[800px] pb-2 border-b outline-none placeholder:text-sm"
+              className=" w-[800px] pb-2 border-b outline-none placeholder:text-sm"
               type="text"
               id="email"
               placeholder="Ex: email@gmail.com"
@@ -158,6 +163,7 @@ const Login = () => {
             {!isLogin && (
               <div className="flex gap-2">
                 <InputFields
+                  fullWidth={true}
                   type={"text"}
                   nameKey="firstname"
                   setValue={setPayLoad}
@@ -166,6 +172,7 @@ const Login = () => {
                   setInvalidFields={setInvalidFields}
                 />
                 <InputFields
+                  fullWidth={true}
                   type={"text"}
                   nameKey="lastname"
                   setValue={setPayLoad}
@@ -177,6 +184,7 @@ const Login = () => {
             )}
             {!isLogin && (
               <InputFields
+                fullWidth={true}
                 type={"text"}
                 nameKey="mobile"
                 setValue={setPayLoad}
@@ -187,6 +195,7 @@ const Login = () => {
             )}
 
             <InputFields
+              fullWidth={true}
               type={"text"}
               nameKey="email"
               setValue={setPayLoad}
@@ -195,6 +204,7 @@ const Login = () => {
               setInvalidFields={setInvalidFields}
             />
             <InputFields
+              fullWidth={true}
               type={"password"}
               nameKey="password"
               setValue={setPayLoad}

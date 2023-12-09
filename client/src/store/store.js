@@ -11,7 +11,6 @@ const commonConfig = {
 
 const userConfig = {
   ...commonConfig,
-  blacklist: ["current"],
 };
 
 export const store = configureStore({

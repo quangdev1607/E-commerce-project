@@ -46,3 +46,23 @@ export const apiLogout = () =>
     url: "/user/logout",
     method: "get",
   });
+
+export const apiGetAllUsers = (params) =>
+  axios({
+    url: "/user/",
+    method: "get",
+    params,
+  });
+
+export const apiUpdateUser = (data, userId) =>
+  axios({
+    url: "/user/" + userId,
+    method: "put",
+    data,
+  });
+
+export const apiDeleteUser = (userId) =>
+  axios({
+    url: "/user/" + userId,
+    method: "delete",
+  });
