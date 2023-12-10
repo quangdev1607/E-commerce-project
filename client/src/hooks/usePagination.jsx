@@ -3,8 +3,8 @@ import { generateRange } from "../utils/helpers";
 
 const usePagination = (totalProductCount, currentPage, siblingCount = 1) => {
   const paginationArray = useMemo(() => {
-    const pageSize = import.meta.env.VITE_LIMIT || 10;
-    const paginationCount = Math.ceil(totalProductCount / pageSize);
+    const pageSize = +import.meta.env.VITE_LIMIT || 10;
+    const paginationCount = Math.ceil(+totalProductCount / pageSize);
     const totalPaginationItems = siblingCount + 5;
 
     if (paginationCount <= totalPaginationItems) return generateRange(1, paginationCount);

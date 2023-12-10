@@ -4,7 +4,7 @@ import { PaginationItems } from "..";
 import usePagination from "../../hooks/usePagination";
 const Pagination = ({ totalCount }) => {
   const [params] = useSearchParams();
-  const pagination = usePagination(totalCount, params.get("page") || 1);
+  const pagination = usePagination(totalCount, +params.get("page") || 1);
   const range = () => {
     const currentPage = +params.get("page");
     const pageSize = +import.meta.env.VITE_LIMIT || 10;

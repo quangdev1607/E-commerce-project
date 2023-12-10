@@ -2,7 +2,7 @@ import clsx from "clsx";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { apiDeleteUser, apiGetAllUsers, apiUpdateUser } from "../../../api/user";
 import { Button, InputFields, InputForm, Pagination, Select } from "../../../components";
@@ -68,6 +68,11 @@ const ManageUsers = () => {
       reset();
       render();
       setEditedUser(null);
+      Swal.fire({
+        title: "Done!",
+        text: "Updated user successfully",
+        icon: "success",
+      });
     }
   };
 
