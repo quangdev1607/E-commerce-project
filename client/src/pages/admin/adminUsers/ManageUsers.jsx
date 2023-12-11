@@ -63,6 +63,7 @@ const ManageUsers = () => {
 
   const [editedUser, setEditedUser] = useState(null);
   const handleEditedUser = async (data) => {
+    console.log(data);
     const response = await apiUpdateUser(data, editedUser._id);
     if (response.success) {
       reset();

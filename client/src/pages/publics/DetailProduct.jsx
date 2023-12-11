@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Slider from "react-slick";
@@ -94,11 +95,18 @@ const DetailProduct = () => {
             {renderStars(product?.totalRatings)} <small className="ml-3">{`${product?.rating.length} review`}</small>
           </span>
           <ul>
-            {product?.description?.spec.map((item, idx) => (
-              <li className="list-item list-square ml-[17px] leading-6" key={idx}>
-                {item}
-              </li>
-            ))}
+            {product?.description.spec.length > 1 &&
+              product?.description?.spec.map((item, idx) => (
+                <li className="list-item list-square ml-[17px] leading-6" key={idx}>
+                  {item}
+                </li>
+              ))}
+            {product?.description.spec.length === 1 && (
+              <div
+                className="text-sm"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product?.description.spec) }}
+              ></div>
+            )}
           </ul>
           <SelectQuantity
             quantity={quantity}

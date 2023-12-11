@@ -6,6 +6,7 @@ export { default as BreadCrumb } from "./common/BreadCrumb";
 export { default as CountDown } from "./common/CountDown";
 export { default as CustomSlider } from "./common/CustomSlider";
 export { default as Loading } from "./common/Loading";
+export { default as Markdown } from "./common/Markdown";
 export { default as Modal } from "./common/Modal";
 export { default as Footer } from "./footer/Footer";
 export { default as Header } from "./headers/Header";

@@ -5,10 +5,20 @@ const { StatusCodes } = require("http-status-codes");
 
 class ProductController {
   async createProduct(req, res) {
-    const { title, description, brand, price } = req.body;
-    if (!title || !description || !brand || !price) throw new BadRequestError("missing inputs");
+    const { title, description, brand, price, category, color } = req.body;
+    const thumbnail = req.files["thumbnail"][0].path;
+    const images = req.files["images"].map((img) => img.path);
+    if (!title || !description || !brand || !price || !category || !color)
+      throw new BadRequestError("missing inputs");
     req.body.slug = slugify(req.body.title);
-    const newProduct = await Product.create({ ...req.body });
+
+    if (!thumbnail) throw new BadRequestError("Thumbnail is required");
+    const newProduct = await Product.create({
+      ...req.body,
+      description: { spec: description },
+      thumbnail,
+      images,
+    });
     res.status(StatusCodes.CREATED).json({
       success: newProduct ? true : false,
       createdProduct: newProduct ? newProduct : "Cannot create product",

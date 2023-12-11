@@ -37,7 +37,7 @@ export const validate = (payLoad, setInvalidFields) => {
   for (let arr of formatedPayload) {
     if (arr[1].trim() === "") {
       invalidFields++;
-      setInvalidFields((prev) => [...prev, { name: arr[0], msg: "Required" }]);
+      setInvalidFields((prev) => [...prev, { name: arr[0], msg: "This field is required" }]);
     }
   }
 
@@ -68,3 +68,12 @@ export const generateRange = (start, end) => {
   const length = end + 1 - start;
   return Array.from({ length }, (_, index) => start + index);
 };
+
+export function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}

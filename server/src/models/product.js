@@ -15,10 +15,6 @@ const productSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
-    // description: {
-    //     type: Array,
-    //     required: true,
-    // },
     description: {
       spec: Array,
       info: Array,

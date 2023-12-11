@@ -10,7 +10,7 @@ const ReviewDisplay = ({ image = avatarDefault, name = "Anonymous", updatedAt, s
       </div>
       <div className="flex flex-col flex-auto gap-1">
         <div className="flex items-center gap-2">
-          <h3 className="font-medium text-lg">{`${name.firstname} ${name.lastname}`}</h3>
+          <h3 className="font-medium text-lg">{`${name?.firstname} ${name?.lastname}`}</h3>
           <span className="font-light text-xs">{moment(updatedAt)?.fromNow()}</span>
         </div>
         <div className="flex">

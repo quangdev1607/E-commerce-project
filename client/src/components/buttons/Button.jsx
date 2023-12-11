@@ -1,8 +1,9 @@
 import { memo } from "react";
 
-const Button = ({ name, handleOnClick, style, iconBefore, iconAfter, type = "button" }) => {
+const Button = ({ disabled, name, handleOnClick, style, iconBefore, iconAfter, type = "button" }) => {
   return (
     <button
+      disabled={disabled}
       type={type}
       onClick={() => {
         handleOnClick && handleOnClick();
