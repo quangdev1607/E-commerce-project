@@ -26,3 +26,9 @@ export const apiCreateProduct = (data) =>
     method: "post",
     data,
   });
+export const apiUpdateProduct = (data, pid) =>
+  axios({
+    url: "/product" + pid,
+    method: "put",
+    data,
+  });

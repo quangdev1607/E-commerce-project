@@ -32,7 +32,7 @@ const ProductDisplay = ({ productData, activeTab, noLabel }) => {
           </div>
         )}
 
-        <img className="  w-full  object-contain " src={productData?.thumbnail || notFoundProductImg} alt="product" />
+        <img className="  w-full  object-cover " src={productData?.thumbnail || notFoundProductImg} alt="product" />
 
         {!noLabel && (
           <img className="absolute overflow-visible w-[130px] h-[70px] top-[2px] left-0" src={newProduct} alt="label" />

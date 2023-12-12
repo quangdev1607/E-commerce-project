@@ -8,7 +8,8 @@ const Pagination = ({ totalCount }) => {
   const range = () => {
     const currentPage = +params.get("page");
     const pageSize = +import.meta.env.VITE_LIMIT || 10;
-    const start = (currentPage - 1) * pageSize + 1;
+    const start = Math.min((currentPage - 1) * pageSize + 1, totalCount);
+
     const end = Math.min(currentPage * pageSize, totalCount);
 
     return `${start} - ${end}`;
@@ -16,15 +17,15 @@ const Pagination = ({ totalCount }) => {
   return (
     <div className="flex items-center w-full justify-between">
       {!params.get("page") && (
-        <span className="text-sm italic">{`Show products 1 - ${Math.min(
+        <span className="text-sm italic">{`${totalCount !== 0 ? "Show products 1" : `Show products 0`} - ${Math.min(
           import.meta.env.VITE_LIMIT,
           totalCount
         )} of ${totalCount}`}</span>
       )}
       {params.get("page") && <span className="text-sm italic">{`Show products ${range()} of ${totalCount}`}</span>}
       <div className="flex items-center">
-        {pagination?.map((el) => (
-          <PaginationItems key={el}>{el}</PaginationItems>
+        {pagination?.map((el, idx) => (
+          <PaginationItems key={idx}>{el}</PaginationItems>
         ))}
       </div>
     </div>

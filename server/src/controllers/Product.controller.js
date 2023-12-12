@@ -11,11 +11,13 @@ class ProductController {
     if (!title || !description || !brand || !price || !category || !color)
       throw new BadRequestError("missing inputs");
     req.body.slug = slugify(req.body.title);
+    const formatedBrand = brand.toUpperCase();
 
     if (!thumbnail) throw new BadRequestError("Thumbnail is required");
     const newProduct = await Product.create({
       ...req.body,
       description: { spec: description },
+      brand: formatedBrand,
       thumbnail,
       images,
     });
@@ -60,8 +62,21 @@ class ProductController {
       const colorQuery = colorArr.map((el) => ({ color: { $regex: el, $options: "i" } }));
       colorQueryObject = { $or: colorQuery };
     }
-    const q = { ...colorQueryObject, ...formatedQueries };
-    let result = Product.find(q);
+
+    let queryObject = {};
+    if (queries.q) {
+      delete formatedQueries.q;
+      queryObject = {
+        $or: [
+          { color: { $regex: queries.q, $options: "i" } },
+          { title: { $regex: queries.q, $options: "i" } },
+          { category: { $regex: queries.q, $options: "i" } },
+          { brand: { $regex: queries.q, $options: "i" } },
+        ],
+      };
+    }
+    const qr = { ...colorQueryObject, ...formatedQueries, ...queryObject };
+    let result = Product.find(qr);
 
     // Sorting
     if (req.query.sort) {
@@ -94,7 +109,7 @@ class ProductController {
         */
     const products = await result;
     if (!products) throw new NotFoundError("Product not found");
-    const counts = await Product.find(q).countDocuments();
+    const counts = await Product.find(qr).countDocuments();
     res.status(StatusCodes.OK).json({
       success: products ? true : false,
       counts,
