@@ -28,7 +28,20 @@ export const apiCreateProduct = (data) =>
   });
 export const apiUpdateProduct = (data, pid) =>
   axios({
-    url: "/product" + pid,
+    url: "/product/" + pid,
+    method: "put",
+    data,
+  });
+
+export const apiDeleteProduct = (pid) =>
+  axios({
+    url: "/product/" + pid,
+    method: "delete",
+  });
+
+export const apiAddVariant = (data, pid) =>
+  axios({
+    url: "/product/variants/" + pid,
     method: "put",
     data,
   });

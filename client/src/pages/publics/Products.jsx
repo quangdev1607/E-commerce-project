@@ -5,7 +5,7 @@ import { BreadCrumb, Pagination, ProductDisplay, SearchItem, SortFilter } from "
 
 const Products = () => {
   const { category } = useParams();
-  //   const formatedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+  console.log(category);
 
   const navigate = useNavigate();
 
@@ -38,16 +38,14 @@ const Products = () => {
   };
 
   useEffect(() => {
-    let param = [];
-    for (let i of params.entries()) param.push(i);
-    const queries = {};
-    for (let i of params) queries[i[0]] = i[1];
+    const queries = Object.fromEntries([...params]);
     let priceQuery = {};
     if (queries.from && queries.to) {
       priceQuery = { price: { gte: queries.from, lte: queries.to } };
       delete queries.from;
       delete queries.to;
     }
+    console.log(queries);
 
     fetchProductData({ ...priceQuery, ...queries });
     window.scrollTo(0, 0);

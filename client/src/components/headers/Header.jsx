@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
@@ -6,12 +6,20 @@ import icons from "../../utils/icons";
 import path from "../../utils/path";
 const Header = () => {
   const { current } = useSelector((state) => state.user);
-  const handleUserPath = () => {
-    if (current?.role === "user") return `/${path.MEMBER}/${path.PERSONAL}`;
-    if (current?.role === "admin") return `/${path.ADMIN}/${path.DASHBOARD}`;
-  };
+  const [isShowOption, setIsShowOption] = useState(false);
 
   const { FaPhone, IoIosMail, FaUser, FaShoppingCart } = icons;
+
+  useEffect(() => {
+    const handleClickOutSide = (e) => {
+      const profilePanel = document.getElementById("profile-panel");
+      if (!profilePanel.contains(e.target)) setIsShowOption(false);
+    };
+    document.addEventListener("click", handleClickOutSide);
+    return () => {
+      document.removeEventListener("click", handleClickOutSide);
+    };
+  }, []);
   return (
     <div className=" w-main h-[110px] py-[34px] flex justify-between ">
       <Link to={`/${path.HOME}`}>
@@ -36,16 +44,32 @@ const Header = () => {
         {/* ----------------------------------------------------------------------- */}
         {current && (
           <>
-            <Link to={handleUserPath()} className={`flex items-center px-5 border-r ${!current && `disabled-link`}`}>
-              <FaUser color={current && "red"} className="w-[20px] h-[20px]" />
-            </Link>
-            {/* ----------------------------------------------------------------------- */}
-            <div className="flex items-center px-5 ">
+            <div className="flex items-center border-r px-5 ">
               <span className="flex gap-3 items-center">
                 <FaShoppingCart color="red" className="w-[20px] h-[20px]" />
                 <span className="text-medium">0 item(s)</span>
               </span>
             </div>
+            <div
+              onClick={() => setIsShowOption((prev) => !prev)}
+              id="profile-panel"
+              className={`relative flex items-center px-6 gap-2  cursor-pointer  ${!current && `disabled-link`}`}
+            >
+              <FaUser color="red" className="w-[20px] h-[20px]" />
+              {isShowOption && (
+                <div className="flex flex-col gap-2  absolute top-full left-0 bg-gray-100 border min-w-[150px]">
+                  <Link className="p-3 w-full hover:bg-sky-300" to={`/${path.MEMBER}/${path.PERSONAL}`}>
+                    Personal
+                  </Link>
+                  {current?.role === "admin" && (
+                    <Link className="p-3 w-full hover:bg-sky-300" to={`/${path.ADMIN}/${path.DASHBOARD}`}>
+                      Admin
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+            {/* ----------------------------------------------------------------------- */}
           </>
         )}
       </div>

@@ -19,7 +19,8 @@ import { FiMenu, FiPrinter, FiSmartphone, FiTablet } from "react-icons/fi";
 import { GiReturnArrow } from "react-icons/gi";
 import { GrLogout } from "react-icons/gr";
 import { IoIosMail } from "react-icons/io";
-import { IoTrashBin } from "react-icons/io5";
+import { IoAdd, IoTrashBin } from "react-icons/io5";
+import { MdEdit } from "react-icons/md";
 import { PiTelevisionFill } from "react-icons/pi";
 import { RiBillLine, RiDashboardLine, RiProductHuntFill } from "react-icons/ri";
 
@@ -48,6 +49,8 @@ const icons = {
   RiProductHuntFill,
   RiBillLine,
   IoTrashBin,
+  MdEdit,
+  IoAdd,
 };
 
 export const categoriesIcon = [FiSmartphone, FiTablet, BsLaptopFill, FaHeadphones, PiTelevisionFill, FiPrinter];

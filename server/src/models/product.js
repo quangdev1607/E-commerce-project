@@ -63,6 +63,16 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    variants: [
+      {
+        color: String,
+        price: Number,
+        thumbnail: String,
+        images: Array,
+        title: String,
+        sku: String,
+      },
+    ],
   },
   {
     timestamps: true,

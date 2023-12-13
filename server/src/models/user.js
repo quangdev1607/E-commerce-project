@@ -44,6 +44,9 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
+    avatar: {
+      type: String,
+    },
     isBlocked: {
       type: Boolean,
       default: false,

@@ -75,36 +75,35 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
   };
 
   const dispatch = useDispatch();
-  // const handleUpdateProduct = async (data) => {
-  //   const invalids = validate(payLoad, setInvalidFields);
-  //   if (invalids === 0) {
-  //     if (data.category) data.category = categories?.find((el) => el._id === data.category)?.category;
-  //     const finalData = { ...data, ...payLoad };
-  //     const formData = new FormData();
-  //     for (let i of Object.entries(finalData)) formData.append(i[0], i[1]);
-  //     if (finalData.thumbnail) formData.append("thumbnail", finalData.thumbnail[0]);
-  //     if (finalData.images) {
-  //       for (let image of finalData.images) formData.append("images", image);
-  //     }
-  //     dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
-  //     const response = await apiCreateProduct(formData);
-  //     dispatch(showModal({ isShowModal: false, modalChildren: null }));
-  //     if (response.success) {
-  //       reset();
-  //       setPreview({
-  //         thumbnail: null,
-  //         images: [],
-  //       });
-  //       setPayLoad({
-  //         description: "",
-  //       });
-  //       Swal.fire("Congratulation!", "Product created successfully", "success");
-  //     }
-  //   }
-  // };
+  const handleUpdateProduct = async (data) => {
+    const invalids = validate(payLoad, setInvalidFields);
+    if (invalids === 0) {
+      if (data.category) data.category = categories?.find((el) => el.category === data.category)?.category;
+      const finalData = { ...data, ...payLoad };
+      const formData = new FormData();
+      for (let i of Object.entries(finalData)) formData.append(i[0], i[1]);
+      if (finalData?.thumbnail.length !== 0) formData.append("thumbnail", finalData.thumbnail[0]);
+      if (finalData?.images.length !== 0) {
+        for (let image of finalData.images) formData.append("images", image);
+      }
 
-  const handleUpdateProduct = (data) => {
-    console.log(data);
+      dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
+      const response = await apiUpdateProduct(formData, editedProduct._id);
+      dispatch(showModal({ isShowModal: false, modalChildren: null }));
+      if (response.success) {
+        reset();
+        setPreview({
+          thumbnail: null,
+          images: [],
+        });
+        setPayLoad({
+          description: "",
+        });
+        setEditedProduct(null);
+        render();
+        Swal.fire("Congratulation!", "Product updated successfully", "success");
+      }
+    }
   };
 
   useEffect(() => {

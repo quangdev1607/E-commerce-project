@@ -2,12 +2,15 @@ import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createSearchParams, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { apiGetProducts } from "../../../api";
-import { InputForm, Pagination } from "../../../components";
+import Swal from "sweetalert2";
+import { apiDeleteProduct, apiGetProducts } from "../../../api";
+import { InputForm, Pagination, Variants } from "../../../components";
 import useDebounce from "../../../hooks/useDebounce";
+import icons from "../../../utils/icons";
 import { UpdateProduct } from "../../admin";
 
 const ManageProducts = () => {
+  const { MdEdit, IoTrashBin, IoAdd } = icons;
   const {
     register,
     formState: { errors },
@@ -28,10 +31,30 @@ const ManageProducts = () => {
   const queriesDebounce = useDebounce(watch("q"), 1000);
   const [update, setUpdate] = useState(false);
   const [editedProduct, setEditedProduct] = useState(null);
+  const [variants, setVariants] = useState(null);
 
   const render = useCallback(() => {
     setUpdate(!update);
   });
+
+  const handleDeleteProduct = (pid) => {
+    Swal.fire({
+      title: "Delete this product?",
+      text: "This product will be permanently deleted, are you sure to continue?",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      icon: "warning",
+    }).then(async (rs) => {
+      if (rs.isConfirmed) {
+        const response = await apiDeleteProduct(pid);
+        if (response.success) {
+          Swal.fire("Done", response.msg, "success");
+          render();
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     if (queriesDebounce) {
       navigate({
@@ -55,6 +78,11 @@ const ManageProducts = () => {
       {editedProduct && (
         <div className="absolute inset-0 bg-gray-100  min-h-screen z-50">
           <UpdateProduct setEditedProduct={setEditedProduct} editedProduct={editedProduct} render={render} />
+        </div>
+      )}
+      {variants && (
+        <div className="absolute inset-0 bg-gray-100  min-h-screen z-50">
+          <Variants setVariants={setVariants} variants={variants} render={render} />
         </div>
       )}
 
@@ -89,54 +117,69 @@ const ManageProducts = () => {
               <th className="px-4 py-2 border border-slate-600">Sold</th>
               <th className="px-4 py-2 border border-slate-600">Color</th>
               <th className="px-4 py-2 border border-slate-600">Ratings</th>
+              <th className="px-4 py-2 border border-slate-600">Variants</th>
               <th className="px-4 py-2 border border-slate-600">Updated at</th>
               <th className="px-4 py-2 border border-slate-600">Actions</th>
             </tr>
           </thead>
           <tbody>
             {products?.data?.map((product, idx) => (
-              <tr key={product._id}>
+              <tr className="border-b-2 border-slate-500" key={product._id}>
                 <td className="border text-center border-slate-700 p-2">
                   {idx + ((+params.get("page") > 1 ? params.get("page") - 1 : 0) * +import.meta.env.VITE_LIMIT + 1)}
                 </td>
-                <td className="border border-slate-700 p-2">
+                <td className=" border-r border-slate-500 p-2">
                   <img src={product?.thumbnail} alt="thumbnail" className="w-12 h-12 object-contain" />
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.title}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.title}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.brand}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.brand}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.category}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.category}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.price}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.price}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.quantity}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.quantity}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.sold}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.sold}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.color}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.color}</span>
                 </td>
-                <td className="border border-slate-700 p-2">
-                  <span>{product.totalRatings}</span>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.totalRatings}</span>
+                </td>
+                <td className=" border-r border-slate-500 p-2">
+                  <span>{product?.variants.length}</span>
                 </td>
 
-                <td className="border border-slate-700 p-2">{moment(product.updatedAt).format("DD/MM/YYYY")}</td>
-                <td className="border border-slate-700 p-1">
+                <td className="p-2 border-r border-slate-500">{moment(product.updatedAt).format("DD/MM/YYYY")}</td>
+                <td className="p-2  ">
                   <span
                     onClick={() => setEditedProduct(product)}
-                    className="px-1 text-green-500 hover:underline cursor-pointer"
+                    className="text-center inline-block px-1 hover:text-green-500 cursor-pointer"
                   >
-                    Edit
+                    <MdEdit size={20} />
                   </span>
 
-                  <span className="px-2 text-red-500 hover:underline cursor-pointer">Delete</span>
+                  <span
+                    onClick={() => handleDeleteProduct(product._id)}
+                    className="text-center inline-block px-1  hover:text-red-500 cursor-pointer"
+                  >
+                    <IoTrashBin size={20} />
+                  </span>
+                  <span
+                    onClick={() => setVariants(product)}
+                    className="text-center inline-block px-1  hover:text-orange-500 cursor-pointer"
+                  >
+                    <IoAdd size={20} />
+                  </span>
                 </td>
               </tr>
             ))}

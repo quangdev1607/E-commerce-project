@@ -4,6 +4,7 @@ import notFoundProductImg from "../../assets/image-not-available.png";
 import { formatCash, renderStars, roundCash } from "../../utils/helpers";
 import icons from "../../utils/icons";
 // import labelProduct from "../../assets/label.png";
+import { Link } from "react-router-dom";
 import newProduct from "../../assets/new-product.png";
 
 const ProductDisplay = ({ productData, activeTab, noLabel }) => {
@@ -40,7 +41,13 @@ const ProductDisplay = ({ productData, activeTab, noLabel }) => {
 
         <div className="flex flex-col gap-3 pt-5 mt-6">
           <span className="flex h-4">{renderStars(productData?.totalRatings)}</span>
-          <span className="line-clamp-1">{productData?.title}</span>
+          {/* <span className="line-clamp-1">{productData?.title}</span> */}
+          <Link
+            to={`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`}
+            className="line-clamp-1 hover:text-main"
+          >
+            {productData?.title}
+          </Link>
           <span>{`${formatCash(roundCash(productData?.price))} VND`}</span>
         </div>
       </div>

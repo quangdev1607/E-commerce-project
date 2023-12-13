@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { Modal } from "./components";
 import { AdminLayout, CreateProducts, DashBoard, ManageOrders, ManageProducts, ManageUsers } from "./pages/admin";
-import { MemberLayout, Personal } from "./pages/member";
+import { History, MemberLayout, MyCart, Personal, WishList } from "./pages/member";
 import {
   Blogs,
   Contact,
@@ -55,6 +55,9 @@ function App() {
         </Route>
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />}></Route>
+          <Route path={path.MYCART} element={<MyCart />}></Route>
+          <Route path={path.WISHLIST} element={<WishList />}></Route>
+          <Route path={path.HISTORY} element={<History />}></Route>
         </Route>
       </Routes>
       <ToastContainer

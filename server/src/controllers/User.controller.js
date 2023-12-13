@@ -204,13 +204,17 @@ class UserController {
 
   async updateUser(req, res) {
     const { userId } = req.user;
-    if (!userId || Object.keys(req.body).length === 0) throw new BadRequestError("missing inputs");
-    const user = await User.findByIdAndUpdate({ _id: userId }, req.body, { new: true }).select(
+    const { firstname, lastname, email, mobile } = req.body;
+    const data = { firstname, lastname, email, mobile };
+
+    if (req.files) data.avatar = req.files["avatar"][0].path;
+    if (!userId || Object.keys(req.body).length === 0) throw new BadRequestError("User not found");
+    const user = await User.findByIdAndUpdate({ _id: userId }, { ...data }, { new: true }).select(
       "-password -role -refreshToken"
     );
     res.status(StatusCodes.OK).json({
       success: user ? true : false,
-      updatedUser: user ? user : "Something wrong",
+      msg: user ? "Updated successfully" : "Something wrong",
     });
   }
 

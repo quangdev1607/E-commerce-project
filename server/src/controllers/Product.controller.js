@@ -27,6 +27,54 @@ class ProductController {
     });
   }
 
+  async updateProduct(req, res) {
+    const { pid } = req.params;
+    const files = req?.files;
+    delete req.body.thumbnail;
+    delete req.body.images;
+    if (files?.thumbnail) {
+      req.body.thumbnail = files["thumbnail"][0].path;
+    }
+    if (files?.images) {
+      req.body.images = files["images"].map((img) => img.path);
+    }
+
+    if (pid.length !== 24) throw new Error("PID is not valid");
+    if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
+    const product = await Product.findByIdAndUpdate(
+      pid,
+      { ...req.body, description: { spec: req.body.description } },
+      { new: true }
+    );
+    if (!product) throw new NotFoundError("Product not found");
+    res.status(StatusCodes.OK).json({
+      success: product ? true : false,
+      updatedProduct: product ? product : "Something wrong",
+    });
+  }
+
+  async addVariant(req, res) {
+    const { pid } = req.params;
+    const thumbnail = req.files["thumbnail"][0].path;
+    const images = req.files["images"]?.map((img) => img.path);
+    const { title, color, price } = req.body;
+    if (!(title && color && price)) throw new BadRequestError("Missing inputs");
+    if (!thumbnail) throw new BadRequestError("Thumbnail is required");
+
+    if (pid.length !== 24) throw new Error("PID is not valid");
+    if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
+    const product = await Product.findByIdAndUpdate(
+      pid,
+      { $push: { variants: { title, price, color, thumbnail, images, sku: crypto.randomUUID() } } },
+      { new: true }
+    );
+    if (!product) throw new NotFoundError("Product not found");
+    res.status(StatusCodes.OK).json({
+      success: product ? true : false,
+      variants: product ? product : "Something wrong",
+    });
+  }
+
   async getSingleProduct(req, res) {
     const { pid } = req.params;
     if (pid.length !== 24) throw new Error("PID is not valid");
@@ -125,20 +173,8 @@ class ProductController {
     res.status(StatusCodes.OK).json({
       success: deletedProduct ? true : false,
       msg: deletedProduct
-        ? `${deletedProduct.slug} product has been deleted`
+        ? `${deletedProduct.title} product has been deleted`
         : "Something is wrong",
-    });
-  }
-
-  async updateProduct(req, res) {
-    const { pid } = req.params;
-    if (pid.length !== 24) throw new Error("PID is not valid");
-    if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
-    const product = await Product.findByIdAndUpdate(pid, { ...req.body }, { new: true });
-    if (!product) throw new NotFoundError("Product not found");
-    res.status(StatusCodes.OK).json({
-      success: product ? true : false,
-      updatedProduct: product ? product : "Something wrong",
     });
   }
 

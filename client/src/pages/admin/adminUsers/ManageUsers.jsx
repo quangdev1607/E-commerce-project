@@ -87,7 +87,7 @@ const ManageUsers = () => {
   const handleDeleteUser = (uid) => {
     Swal.fire({
       title: "Delete this user?",
-      text: "This user will be permernently deleted, are your sure to continue?",
+      text: "This user will be permanently deleted, are your sure to continue?",
       showCancelButton: true,
       cancelButtonText: "Cancel",
     }).then(async (rs) => {
