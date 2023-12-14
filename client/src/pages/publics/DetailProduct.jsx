@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useFetcher, useParams } from "react-router-dom";
 import Slider from "react-slick";
 import { apiGetProducts, apiGetSingleProduct } from "../../api";
 import { BreadCrumb, Button, ProductDisplay, ProductInfo, SelectQuantity } from "../../components";
@@ -15,15 +15,16 @@ const settings = {
   slidesToScroll: 3,
 };
 
-const DetailProduct = () => {
+const DetailProduct = ({ isQuickView, data }) => {
   const { FaShieldAlt, FaPhoneAlt, FaShippingFast, FaGift, GiReturnArrow } = icons;
-  const { pid, title, category } = useParams();
-
+  // const { pid, title, category } = useParams();
+  const params = useParams();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [update, setUpdate] = useState(false);
   const [suggestedProducts, setSuggestedProducts] = useState(null);
   const [isVariant, setIsVariant] = useState(null);
+  const [pid, setPid] = useState(null);
   const handleQuantity = useCallback(
     (number) => {
       if (!Number(number) || Number(number) < 1) return;
@@ -32,6 +33,10 @@ const DetailProduct = () => {
     [quantity]
   );
 
+  useEffect(() => {
+    if (data && data.pid) setPid(data.pid);
+    else if (params && params.pid) setPid(params.pid);
+  }, [data, params]);
   const handleQuantityButton = useCallback(
     (flag) => {
       if (flag === "minus") {
@@ -72,18 +77,21 @@ const DetailProduct = () => {
   }, [product]);
 
   return (
-    <main className="w-full ">
-      <section className="flex flex-col items-center h-[81px] bg-[#F7F7F7]">
-        <div className="w-main ">
-          {isVariant ? (
-            <h4 className="font-bold text-[18px] ">{product?.variants.find((el) => el.sku === isVariant)?.title}</h4>
-          ) : (
-            <h4 className="font-bold text-[18px] ">{title}</h4>
-          )}
+    <main onClick={(e) => e.stopPropagation()} className="w-full bg-white ">
+      {!isQuickView && (
+        <section className="flex flex-col items-center h-[81px] bg-[#F7F7F7]">
+          <div className="w-main ">
+            {isVariant ? (
+              <h4 className="font-bold text-[18px] ">{product?.variants.find((el) => el.sku === isVariant)?.title}</h4>
+            ) : (
+              <h4 className="font-bold text-[18px] ">{params.title}</h4>
+            )}
 
-          <BreadCrumb title={title} category={category} />
-        </div>
-      </section>
+            <BreadCrumb title={params.title} category={params.category} />
+          </div>
+        </section>
+      )}
+
       <section className="w-main flex m-auto mt-4">
         <div className="w-2/5 flex flex-col gap-4">
           <img
@@ -177,63 +185,70 @@ const DetailProduct = () => {
 
           <span className="text-sm italic font-light">{`(Sold: ${product?.sold})`}</span>
         </div>
-        <div className="w-1/5 flex flex-col gap-3">
-          <div className="flex gap-3 border p-1 items-center ">
-            <FaShieldAlt className="w-[30px] h-[30px]" />
-            <div className="flex flex-col justify-start">
-              <h4 className="text-[14px] font-medium">Guarantee</h4>
-              <span className="text-xs font-light">Quality Check</span>
+        {!isQuickView && (
+          <div className="w-1/5 flex flex-col gap-3">
+            <div className="flex gap-3 border p-1 items-center ">
+              <FaShieldAlt className="w-[30px] h-[30px]" />
+              <div className="flex flex-col justify-start">
+                <h4 className="text-[14px] font-medium">Guarantee</h4>
+                <span className="text-xs font-light">Quality Check</span>
+              </div>
+            </div>
+            <div className="flex gap-3 border p-1 items-center ">
+              <FaShippingFast className="w-[30px] h-[30px]" />
+              <div className="flex flex-col">
+                <h4 className="text-[14px] font-medium">Free Shipping</h4>
+                <span className="text-xs font-light">Free On All Products</span>
+              </div>
+            </div>
+            <div className="flex gap-3 border p-1 items-center ">
+              <FaGift className="w-[30px] h-[30px]" />
+              <div className="flex flex-col">
+                <h4 className="text-[14px] font-medium">Special Gift Cards</h4>
+                <span className="text-xs font-light">Special Gift Cards</span>
+              </div>
+            </div>
+            <div className="flex gap-3 border p-1 items-center ">
+              <GiReturnArrow className="w-[30px] h-[30px]" />
+              <div className="flex flex-col">
+                <h4 className="text-[14px] font-medium">Free Return</h4>
+                <span className="text-xs font-light">Within 7 Days</span>
+              </div>
+            </div>
+            <div className="flex gap-3 border p-1 items-center ">
+              <FaPhoneAlt className="w-[30px] h-[30px]" />
+              <div>
+                <h4 className="text-[14px] font-medium">Consultancy</h4>
+                <span className="text-xs font-light">Lifetime 24/7/356</span>
+              </div>
             </div>
           </div>
-          <div className="flex gap-3 border p-1 items-center ">
-            <FaShippingFast className="w-[30px] h-[30px]" />
-            <div className="flex flex-col">
-              <h4 className="text-[14px] font-medium">Free Shipping</h4>
-              <span className="text-xs font-light">Free On All Products</span>
-            </div>
-          </div>
-          <div className="flex gap-3 border p-1 items-center ">
-            <FaGift className="w-[30px] h-[30px]" />
-            <div className="flex flex-col">
-              <h4 className="text-[14px] font-medium">Special Gift Cards</h4>
-              <span className="text-xs font-light">Special Gift Cards</span>
-            </div>
-          </div>
-          <div className="flex gap-3 border p-1 items-center ">
-            <GiReturnArrow className="w-[30px] h-[30px]" />
-            <div className="flex flex-col">
-              <h4 className="text-[14px] font-medium">Free Return</h4>
-              <span className="text-xs font-light">Within 7 Days</span>
-            </div>
-          </div>
-          <div className="flex gap-3 border p-1 items-center ">
-            <FaPhoneAlt className="w-[30px] h-[30px]" />
-            <div>
-              <h4 className="text-[14px] font-medium">Consultancy</h4>
-              <span className="text-xs font-light">Lifetime 24/7/356</span>
-            </div>
+        )}
+      </section>
+      {!isQuickView && (
+        <section className="w-main m-auto  mt-[48px]">
+          <ProductInfo
+            productName={product?.title}
+            totalReviews={product?.rating}
+            totalRatings={product?.totalRatings}
+            pid={pid}
+            handleRerender={renderUpdate}
+          />
+        </section>
+      )}
+
+      {!isQuickView && (
+        <div className="w-main m-auto mt-4">
+          <h1 className="uppercase font-semibold text-lg border-b-4 border-red-500 ">Other customer also buy:</h1>
+          <div className="mt-4">
+            <Slider className="custom-slider" {...settings}>
+              {suggestedProducts?.map((item) => (
+                <ProductDisplay noLabel={true} key={item._id} productData={item} />
+              ))}
+            </Slider>
           </div>
         </div>
-      </section>
-      <section className="w-main m-auto  mt-[48px]">
-        <ProductInfo
-          productName={product?.title}
-          totalReviews={product?.rating}
-          totalRatings={product?.totalRatings}
-          pid={pid}
-          handleRerender={renderUpdate}
-        />
-      </section>
-      <div className="w-main m-auto mt-4">
-        <h1 className="uppercase font-semibold text-lg border-b-4 border-red-500 ">Other customer also buy:</h1>
-        <div className="mt-4">
-          <Slider className="custom-slider" {...settings}>
-            {suggestedProducts?.map((item) => (
-              <ProductDisplay noLabel={true} key={item._id} productData={item} />
-            ))}
-          </Slider>
-        </div>
-      </div>
+      )}
     </main>
   );
 };

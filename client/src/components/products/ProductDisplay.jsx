@@ -6,10 +6,22 @@ import icons from "../../utils/icons";
 // import labelProduct from "../../assets/label.png";
 import { Link } from "react-router-dom";
 import newProduct from "../../assets/new-product.png";
+import withBaseComponent from "../../hocs/withBaseComponent";
+import { DetailProduct } from "../../pages/publics";
+import { showModal } from "../../store/app/appSlice";
 
-const ProductDisplay = ({ productData, activeTab, noLabel }) => {
+const ProductDisplay = ({ productData, activeTab, noLabel, navigate, dispatch }) => {
   const [isShowedOption, setIsShowedOption] = useState(false);
   const { FaHeart, FiMenu, FaEye } = icons;
+  const handleClickOptions = (e, option) => {
+    e.stopPropagation();
+    if (option === "MENU") navigate(`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`);
+    if (option === "WISHLIST") console.log("Wishlist");
+    if (option === "QUICKVIEW")
+      dispatch(
+        showModal({ isShowModal: true, modalChildren: <DetailProduct data={{ pid: productData._id }} isQuickView /> })
+      );
+  };
   return (
     <div className="w-full text-base py-[10px] relative">
       <div
@@ -27,9 +39,15 @@ const ProductDisplay = ({ productData, activeTab, noLabel }) => {
           <div
             className={`absolute bottom-1/3 left-0 right-0 flex items-center justify-center gap-2 animate-slide-top `}
           >
-            <SelectOption icon={<FaHeart />} />
-            <SelectOption icon={<FiMenu />} />
-            <SelectOption icon={<FaEye />} />
+            <span title="Add to wish list" onClick={(e) => handleClickOptions(e, "WISHLIST")}>
+              <SelectOption icon={<FaHeart />} />
+            </span>
+            <span title="More options" onClick={(e) => handleClickOptions(e, "MENU")}>
+              <SelectOption icon={<FiMenu />} />
+            </span>
+            <span title="Quick view" onClick={(e) => handleClickOptions(e, "QUICKVIEW")}>
+              <SelectOption icon={<FaEye />} />
+            </span>
           </div>
         )}
 
@@ -55,4 +73,4 @@ const ProductDisplay = ({ productData, activeTab, noLabel }) => {
   );
 };
 
-export default memo(ProductDisplay);
+export default withBaseComponent(memo(ProductDisplay));

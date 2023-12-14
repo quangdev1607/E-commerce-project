@@ -25,6 +25,7 @@ export { default as Product } from "./products/Product";
 export { default as ProductDisplay } from "./products/ProductDisplay";
 export { default as ProductInfo } from "./products/ProductInfo";
 export { default as ProductSlider } from "./products/ProductSlider";
+export { default as QuickView } from "./products/QuickView";
 export { default as Variants } from "./products/Variants";
 export { default as RatingSection } from "./rating/RatingSection";
 export { default as ReviewDisplay } from "./rating/ReviewDisplay";
