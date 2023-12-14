@@ -55,7 +55,7 @@ function App() {
         </Route>
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />}></Route>
-          <Route path={path.MYCART} element={<MyCart />}></Route>
+          <Route path={path.MYCART} element={<MyCart id="cart" />}></Route>
           <Route path={path.WISHLIST} element={<WishList />}></Route>
           <Route path={path.HISTORY} element={<History />}></Route>
         </Route>

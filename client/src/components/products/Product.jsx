@@ -4,13 +4,20 @@ import { SelectOption } from "..";
 import notFoundProductImg from "../../assets/image-not-available.png";
 import labelProduct from "../../assets/label.png";
 import newProduct from "../../assets/new-product.png";
+import withBaseComponent from "../../hocs/withBaseComponent";
 import { formatCash, renderStars, roundCash } from "../../utils/helpers";
 import icons from "../../utils/icons";
 import path from "../../utils/path";
 
-const Product = ({ productData, activeTab }) => {
+const Product = ({ productData, activeTab, navigate }) => {
   const [isShowedOption, setIsShowedOption] = useState(false);
   const { FaHeart, FiMenu, FaEye } = icons;
+  const handleClickOptions = (e, option) => {
+    e.stopPropagation();
+    if (option === "MENU") navigate(`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`);
+    if (option === "WISHLIST") console.log("Added to Wish-list");
+    if (option === "QUICKVIEW") console.log("SHOW QUICKVIEW");
+  };
   return (
     <div className="w-full text-base py-[10px] px-[10px] relative ">
       <div
@@ -28,9 +35,15 @@ const Product = ({ productData, activeTab }) => {
           <div
             className={`absolute bottom-1/3 left-0 right-0 flex items-center justify-center gap-2 animate-slide-top `}
           >
-            <SelectOption icon={<FaHeart />} />
-            <SelectOption icon={<FiMenu />} />
-            <SelectOption icon={<FaEye />} />
+            <span onClick={(e) => handleClickOptions(e, "WISHLIST")}>
+              <SelectOption icon={<FaHeart />} />
+            </span>
+            <span onClick={(e) => handleClickOptions(e, "MENU")}>
+              <SelectOption icon={<FiMenu />} />
+            </span>
+            <span onClick={(e) => handleClickOptions(e, "QUICKVIEW")}>
+              <SelectOption icon={<FaEye />} />
+            </span>
           </div>
         )}
         <Link to={`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`}>
@@ -66,4 +79,4 @@ const Product = ({ productData, activeTab }) => {
   );
 };
 
-export default memo(Product);
+export default withBaseComponent(memo(Product));

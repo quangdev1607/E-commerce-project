@@ -13,7 +13,7 @@ const Header = () => {
   useEffect(() => {
     const handleClickOutSide = (e) => {
       const profilePanel = document.getElementById("profile-panel");
-      if (!profilePanel.contains(e.target)) setIsShowOption(false);
+      if (!profilePanel?.contains(e.target)) setIsShowOption(false);
     };
     document.addEventListener("click", handleClickOutSide);
     return () => {

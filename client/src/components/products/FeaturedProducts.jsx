@@ -5,7 +5,7 @@ import { formatCash, renderStars, roundCash } from "../../utils/helpers";
 const FeaturedProducts = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const fetchFeaturedProducts = async () => {
-    const response = await apiGetProducts({ limit: 9, sort: "-sold", totalRatings: 5 });
+    const response = await apiGetProducts({ limit: 9, sort: "-totalRatings" });
     if (response.success === true) setFeaturedProducts(response.data);
   };
 

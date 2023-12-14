@@ -1,5 +1,7 @@
-const MyCart = () => {
+import withBaseComponent from "../../hocs/withBaseComponent";
+
+const MyCart = (props) => {
   return <div>MyCart</div>;
 };
 
-export default MyCart;
+export default withBaseComponent(MyCart);
