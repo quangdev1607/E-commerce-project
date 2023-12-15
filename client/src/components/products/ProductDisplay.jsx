@@ -1,21 +1,40 @@
 import { memo, useState } from "react";
-import { SelectOption } from "..";
-import notFoundProductImg from "../../assets/image-not-available.png";
-import { formatCash, renderStars, roundCash } from "../../utils/helpers";
-import icons from "../../utils/icons";
-// import labelProduct from "../../assets/label.png";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import { SelectOption } from "..";
+import { apiAddToCart } from "../../api";
+import notFoundProductImg from "../../assets/image-not-available.png";
 import newProduct from "../../assets/new-product.png";
 import withBaseComponent from "../../hocs/withBaseComponent";
 import { DetailProduct } from "../../pages/publics";
 import { showModal } from "../../store/app/appSlice";
+import { getCurrent } from "../../store/user/asyncActions";
+import { formatCash, renderStars, roundCash } from "../../utils/helpers";
+import icons from "../../utils/icons";
 
-const ProductDisplay = ({ productData, activeTab, noLabel, navigate, dispatch }) => {
+const ProductDisplay = ({ productData, noLabel, dispatch }) => {
   const [isShowedOption, setIsShowedOption] = useState(false);
-  const { FaHeart, FiMenu, FaEye } = icons;
-  const handleClickOptions = (e, option) => {
+  const { current } = useSelector((state) => state.user);
+  const { FaHeart, FaEye, FaCartPlus, BsFillCartCheckFill } = icons;
+  const handleClickOptions = async (e, option) => {
     e.stopPropagation();
-    if (option === "MENU") navigate(`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`);
+    if (option === "CART") {
+      if (!current)
+        return Swal.fire({
+          title: "PLease login",
+          icon: "info",
+        });
+      const response = await apiAddToCart({
+        pid: productData._id,
+        color: productData?.color,
+        price: productData?.price,
+        title: productData?.title,
+        thumbnail: productData?.thumbnail,
+      });
+      if (response.success) Swal.fire("Done", response.msg, "success").then(() => dispatch(getCurrent()));
+      else Swal.fire("Oops", response.msg, "error");
+    }
     if (option === "WISHLIST") console.log("Wishlist");
     if (option === "QUICKVIEW")
       dispatch(
@@ -42,9 +61,16 @@ const ProductDisplay = ({ productData, activeTab, noLabel, navigate, dispatch })
             <span title="Add to wish list" onClick={(e) => handleClickOptions(e, "WISHLIST")}>
               <SelectOption icon={<FaHeart />} />
             </span>
-            <span title="More options" onClick={(e) => handleClickOptions(e, "MENU")}>
-              <SelectOption icon={<FiMenu />} />
-            </span>
+            {current?.cart.some((el) => el.product._id === productData._id) ? (
+              <span title="Added">
+                <SelectOption icon={<BsFillCartCheckFill color="green" />} />
+              </span>
+            ) : (
+              <span title="Add to cart" onClick={(e) => handleClickOptions(e, "CART")}>
+                <SelectOption icon={<FaCartPlus />} />
+              </span>
+            )}
+
             <span title="Quick view" onClick={(e) => handleClickOptions(e, "QUICKVIEW")}>
               <SelectOption icon={<FaEye />} />
             </span>
@@ -59,7 +85,6 @@ const ProductDisplay = ({ productData, activeTab, noLabel, navigate, dispatch })
 
         <div className="flex flex-col gap-3 pt-5 mt-6">
           <span className="flex h-4">{renderStars(productData?.totalRatings)}</span>
-          {/* <span className="line-clamp-1">{productData?.title}</span> */}
           <Link
             to={`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`}
             className="line-clamp-1 hover:text-main"

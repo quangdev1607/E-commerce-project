@@ -143,7 +143,7 @@ class UserController {
     }
 
     let result = User.find(formatedQueries)
-      .populate("cart.product", "title price brand totalRatings")
+      .populate("cart.product", "title price brand totalRatings thumbnail")
       .select("-refreshToken -password ");
 
     // Sorting
@@ -182,7 +182,7 @@ class UserController {
   async getOneUser(req, res) {
     const { userId } = req.user;
     const user = await User.findById({ _id: userId })
-      .populate("cart.product", "title price brand totalRatings")
+      .populate("cart.product", "title price brand totalRatings thumbnail category")
       .select("-refreshToken -password");
     return res.status(StatusCodes.OK).json({
       success: user ? true : false,
@@ -352,8 +352,8 @@ class UserController {
 
   async addUserCart(req, res) {
     const { userId } = req.user;
-    const { pid, quantity, color } = req.body;
-    if (!pid || !quantity || !color) throw new BadRequestError("missing inputs");
+    const { pid, quantity = 1, color, price, title, thumbnail } = req.body;
+    if (!pid || !color || !price) throw new BadRequestError("missing inputs");
     if (pid.length !== 24) throw new BadRequestError("Invalid Product ID");
 
     const userCart = await User.findById(userId);
@@ -361,15 +361,21 @@ class UserController {
       (el) => el.product.toString() === pid && el.color === color
     );
 
-    if (hasProduct) {
+    if (hasProduct && hasProduct.color === color) {
       const response = await User.updateOne(
         { cart: { $elemMatch: hasProduct } },
-        { $set: { "cart.$.quantity": quantity } },
+        {
+          $set: {
+            "cart.$.quantity": quantity,
+            "cart.$.price": price,
+            "cart.$.thumbnail": thumbnail,
+          },
+        },
         { new: true }
       );
       res.status(StatusCodes.OK).json({
         success: response ? true : false,
-        msg: response.acknowledged ? "Cart updated successfully" : "Something went wrong",
+        msg: response ? "Cart updated successfully" : "Something went wrong",
         quantity:
           +hasProduct.quantity !== +quantity
             ? `from ${hasProduct.quantity} to ${quantity}`
@@ -378,7 +384,7 @@ class UserController {
     } else {
       const response = await User.findByIdAndUpdate(
         userId,
-        { $push: { cart: { product: pid, quantity, color } } },
+        { $push: { cart: { product: pid, quantity, color, price, title, thumbnail } } },
         { new: true }
       );
       res.status(StatusCodes.OK).json({
@@ -387,6 +393,21 @@ class UserController {
         updatedProduct: response,
       });
     }
+  }
+
+  async removeCartProduct(req, res) {
+    const { userId } = req.user;
+    const { pid } = req.params;
+    if (pid.length !== 24) throw new BadRequestError("Invalid Product ID");
+    const response = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { cart: { _id: pid } } },
+      { new: true }
+    );
+    return res.status(200).json({
+      success: response ? true : false,
+      msg: response ? "Cart removed" : "Something wrong",
+    });
   }
 }
 

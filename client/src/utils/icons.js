@@ -1,7 +1,8 @@
 import { AiFillHome, AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { BsLaptopFill } from "react-icons/bs";
+import { BsFillCartCheckFill, BsLaptopFill } from "react-icons/bs";
 import {
   FaAngleDown,
+  FaCartPlus,
   FaEye,
   FaGift,
   FaHeadphones,
@@ -51,6 +52,8 @@ const icons = {
   IoTrashBin,
   MdEdit,
   IoAdd,
+  BsFillCartCheckFill,
+  FaCartPlus,
 };
 
 export const categoriesIcon = [FiSmartphone, FiTablet, BsLaptopFill, FaHeadphones, PiTelevisionFill, FiPrinter];

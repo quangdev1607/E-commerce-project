@@ -13,10 +13,10 @@ import path from "../../utils/path";
 
 const Product = ({ productData, activeTab, navigate, dispatch }) => {
   const [isShowedOption, setIsShowedOption] = useState(false);
-  const { FaHeart, FiMenu, FaEye } = icons;
+  const { FaHeart, FiMenu, FaEye, IoAdd } = icons;
   const handleClickOptions = (e, option) => {
     e.stopPropagation();
-    if (option === "MENU") navigate(`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`);
+    if (option === "CART") navigate(`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`);
     if (option === "WISHLIST") console.log("Wishlist");
     if (option === "QUICKVIEW")
       dispatch(
@@ -43,8 +43,8 @@ const Product = ({ productData, activeTab, navigate, dispatch }) => {
             <span title="Add to wish list" onClick={(e) => handleClickOptions(e, "WISHLIST")}>
               <SelectOption icon={<FaHeart />} />
             </span>
-            <span title="More options" onClick={(e) => handleClickOptions(e, "MENU")}>
-              <SelectOption icon={<FiMenu />} />
+            <span title="Add to cart" onClick={(e) => handleClickOptions(e, "CART")}>
+              <SelectOption icon={<IoAdd />} />
             </span>
             <span title="Quick view" onClick={(e) => handleClickOptions(e, "QUICKVIEW")}>
               <SelectOption icon={<FaEye />} />

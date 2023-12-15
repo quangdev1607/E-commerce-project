@@ -11,6 +11,18 @@ export default {
       roman: "upper-roman",
     },
     extend: {
+      gridRow: {
+        "span-7": "span 7 / span 7",
+        "span-8": "span 8 / span 8",
+      },
+      gridTemplateRows: {
+        // Simple 8 row grid
+        10: "repeat(10, minmax(0, 1fr))",
+        7: "repeat(7, minmax(0, 1fr))",
+
+        // Complex site-specific row configuration
+        layout: "200px minmax(900px, 1fr) 100px",
+      },
       width: {
         main: "1220px",
       },

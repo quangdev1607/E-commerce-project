@@ -1,6 +1,7 @@
+import clsx from "clsx";
 import { memo } from "react";
 
-const Button = ({ disabled, name, handleOnClick, style, iconBefore, iconAfter, type = "button" }) => {
+const Button = ({ fullWidth, disabled, name, handleOnClick, style, iconBefore, iconAfter, type = "button" }) => {
   return (
     <button
       disabled={disabled}
@@ -8,7 +9,11 @@ const Button = ({ disabled, name, handleOnClick, style, iconBefore, iconAfter, t
       onClick={() => {
         handleOnClick && handleOnClick();
       }}
-      className={style ? style : "px-4 py-2 rounded-md text-white  bg-main text-semibold hover:opacity-70"}
+      className={clsx(
+        style
+          ? style
+          : `${fullWidth && "w-full"} px-4 py-2 rounded-md text-white  bg-main text-semibold hover:opacity-70`
+      )}
     >
       {iconBefore}
       <span>{name}</span>

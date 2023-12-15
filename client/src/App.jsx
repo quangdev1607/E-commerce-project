@@ -4,12 +4,13 @@ import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import { Modal } from "./components";
+import { Cart, Modal } from "./components";
 import { AdminLayout, CreateProducts, DashBoard, ManageOrders, ManageProducts, ManageUsers } from "./pages/admin";
 import { History, MemberLayout, MyCart, Personal, WishList } from "./pages/member";
 import {
   Blogs,
   Contact,
+  DetailCart,
   DetailProduct,
   FAQ,
   Home,
@@ -20,17 +21,26 @@ import {
   ResetPassword,
   Services,
 } from "./pages/publics";
+import { showCartModal } from "./store/app/appSlice";
 import { getCategories } from "./store/app/asyncActions";
 import path from "./utils/path";
 
 function App() {
   const dispatch = useDispatch();
-  const { isShowModal, modalChildren } = useSelector((state) => state.app);
+  const { isShowModal, modalChildren, isShowCartModal } = useSelector((state) => state.app);
   useEffect(() => {
     dispatch(getCategories());
   }, []);
   return (
     <div className=" h-screen font-main ">
+      {isShowCartModal && (
+        <div
+          onClick={() => dispatch(showCartModal())}
+          className="absolute inset-0  flex backdrop-brightness-50 z-50 justify-end"
+        >
+          <Cart />
+        </div>
+      )}
       {isShowModal && <Modal>{modalChildren}</Modal>}
       <Routes>
         <Route path={path.PUBLIC} element={<Public />}>
@@ -41,6 +51,7 @@ function App() {
           <Route path={path.CONTACT} element={<Contact />}></Route>
           <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}></Route>
           <Route path={path.PRODUCTS} element={<Products />}></Route>
+          <Route path={path.DETAIL_CART} element={<DetailCart />}></Route>
           <Route path={path.ALL} element={<Home />}></Route>
         </Route>
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />}></Route>

@@ -5,8 +5,6 @@ import { BreadCrumb, Pagination, ProductDisplay, SearchItem, SortFilter } from "
 
 const Products = () => {
   const { category } = useParams();
-  console.log(category);
-
   const navigate = useNavigate();
 
   const [params] = useSearchParams();
@@ -33,7 +31,10 @@ const Products = () => {
   }, [sort]);
 
   const fetchProductData = async (queries) => {
-    const response = await apiGetProducts(queries);
+    const response = await apiGetProducts({
+      ...queries,
+      category: category.charAt(0).toUpperCase() + category.slice(1),
+    });
     if (response.success) setProducts(response);
   };
 
@@ -45,7 +46,6 @@ const Products = () => {
       delete queries.from;
       delete queries.to;
     }
-    console.log(queries);
 
     fetchProductData({ ...priceQuery, ...queries });
     window.scrollTo(0, 0);

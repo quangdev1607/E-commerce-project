@@ -2,9 +2,11 @@ import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import withBaseComponent from "../../hocs/withBaseComponent";
+import { showCartModal } from "../../store/app/appSlice";
 import icons from "../../utils/icons";
 import path from "../../utils/path";
-const Header = () => {
+const Header = ({ dispatch }) => {
   const { current } = useSelector((state) => state.user);
   const [isShowOption, setIsShowOption] = useState(false);
 
@@ -45,9 +47,11 @@ const Header = () => {
         {current && (
           <>
             <div className="flex items-center border-r px-5 ">
-              <span className="flex gap-3 items-center">
+              <span onClick={() => dispatch(showCartModal())} className="flex gap-3 items-center cursor-pointer">
                 <FaShoppingCart color="red" className="w-[20px] h-[20px]" />
-                <span className="text-medium">0 item(s)</span>
+                <span className="text-medium">
+                  {current?.cart.length > 0 ? `${current?.cart.length} items` : "0 item"}
+                </span>
               </span>
             </div>
             <div
@@ -77,4 +81,4 @@ const Header = () => {
   );
 };
 
-export default memo(Header);
+export default withBaseComponent(memo(Header));

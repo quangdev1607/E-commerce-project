@@ -3,14 +3,14 @@ import { Outlet } from "react-router";
 import { Footer, Header, Navigation, TopHeader } from "../../components";
 const Public = () => {
   return (
-    <div className="max-h-screen overflow-y-auto w-full flex flex-col items-center">
+    <div className="min-h-screen overflow-y-auto w-full flex flex-col items-center">
       <TopHeader />
       <Header />
       <Navigation />
       <div className="w-full flex items-center flex-col">
         <Outlet />
       </div>
-      <div className="w-full ">
+      <div className="w-full mt-auto ">
         <Footer />
       </div>
     </div>

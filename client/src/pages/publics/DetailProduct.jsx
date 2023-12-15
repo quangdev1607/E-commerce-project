@@ -1,12 +1,16 @@
 import clsx from "clsx";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
-import { useFetcher, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { createSearchParams, useNavigate, useParams } from "react-router-dom";
 import Slider from "react-slick";
-import { apiGetProducts, apiGetSingleProduct } from "../../api";
+import Swal from "sweetalert2";
+import { apiAddToCart, apiGetProducts, apiGetSingleProduct } from "../../api";
 import { BreadCrumb, Button, ProductDisplay, ProductInfo, SelectQuantity } from "../../components";
+import { getCurrent } from "../../store/user/asyncActions";
 import { formatCash, renderStars, roundCash } from "../../utils/helpers";
 import icons from "../../utils/icons";
+import path from "../../utils/path";
 const settings = {
   dots: false,
   infinite: false,
@@ -17,7 +21,8 @@ const settings = {
 
 const DetailProduct = ({ isQuickView, data }) => {
   const { FaShieldAlt, FaPhoneAlt, FaShippingFast, FaGift, GiReturnArrow } = icons;
-  // const { pid, title, category } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const params = useParams();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -25,6 +30,7 @@ const DetailProduct = ({ isQuickView, data }) => {
   const [suggestedProducts, setSuggestedProducts] = useState(null);
   const [isVariant, setIsVariant] = useState(null);
   const [pid, setPid] = useState(null);
+
   const handleQuantity = useCallback(
     (number) => {
       if (!Number(number) || Number(number) < 1) return;
@@ -56,6 +62,47 @@ const DetailProduct = ({ isQuickView, data }) => {
   const fetchProductData = async () => {
     const response = await apiGetSingleProduct(pid);
     if (response.success) setProduct(response.productData);
+  };
+
+  const { current } = useSelector((state) => state.user);
+  const handleAddToCart = async () => {
+    if (!current)
+      return Swal.fire({
+        title: "PLease login",
+        text: "Login",
+        icon: "info",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+      }).then((rs) => {
+        if (rs.isConfirmed)
+          navigate({
+            pathname: `/${path.LOGIN}`,
+            search: createSearchParams({ redirect: location.pathname }).toString(),
+          });
+      });
+    if (isVariant) {
+      const response = await apiAddToCart({
+        pid,
+        color: product.variants.find((el) => el.sku === isVariant).color,
+        price: product.variants.find((el) => el.sku === isVariant).price,
+        title: product.variants.find((el) => el.sku === isVariant).title,
+        thumbnail: product.variants.find((el) => el.sku === isVariant).thumbnail,
+        quantity,
+      });
+      if (response.success) Swal.fire("Done", response.msg, "success").then(() => dispatch(getCurrent()));
+      else Swal.fire("Oops", response.msg, "error");
+    } else {
+      const response = await apiAddToCart({
+        pid,
+        color: product?.color,
+        quantity,
+        title: product?.title,
+        thumbnail: product?.thumbnail,
+        price: product?.price,
+      });
+      if (response.success) Swal.fire("Done", response.msg, "success").then(() => dispatch(getCurrent()));
+      else Swal.fire("Oops", response.msg, "error");
+    }
   };
   useEffect(() => {
     if (pid) {
@@ -174,14 +221,16 @@ const DetailProduct = ({ isQuickView, data }) => {
               ))}
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            <span className="font-medium">Quantity: </span>
+            <SelectQuantity
+              quantity={quantity}
+              handleQuantity={handleQuantity}
+              handleQuantityButton={handleQuantityButton}
+            />
+          </div>
 
-          <SelectQuantity
-            quantity={quantity}
-            handleQuantity={handleQuantity}
-            handleQuantityButton={handleQuantityButton}
-          />
-
-          <Button name={"Add to cart"} />
+          <Button handleOnClick={() => handleAddToCart()} name={"Add to cart"} />
 
           <span className="text-sm italic font-light">{`(Sold: ${product?.sold})`}</span>
         </div>

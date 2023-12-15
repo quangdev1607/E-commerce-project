@@ -37,7 +37,12 @@ const TopHeader = () => {
             <span>
               Welcome {current?.firstname} {current?.lastname}
             </span>
-            <span onClick={() => dispatch(logout())}>
+            <span
+              onClick={() => {
+                navigate(`/${path.HOME}`);
+                dispatch(logout());
+              }}
+            >
               <GrLogout className=" hover:opacity-70 cursor-pointer" />
             </span>
           </div>

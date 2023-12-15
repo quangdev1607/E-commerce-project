@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { apiForgotPassword, apiLogin, apiRegister, apiVerifyAccount } from "../../api/user";
 import { Button, InputFields, Loading } from "../../components";
@@ -55,7 +55,7 @@ const Login = () => {
 
         if (response.success) {
           dispatch(login({ isLoggedIn: true, token: response.accessToken, current: response.userData }));
-          navigate(`/${path.HOME}`);
+          searchParams.get("redirect") ? navigate(searchParams.get("redirect")) : navigate(`/${path.HOME}`);
         } else Swal.fire("Oops!", response.msg, "error");
       }
 
@@ -97,6 +97,8 @@ const Login = () => {
     else Swal.fire("Oops!", "Verified token is not valid", "error");
     setToken("");
   };
+  const [searchParams] = useSearchParams();
+
   //-------------------------------------------------------------------------------------------------------------
   return (
     <main className="relative w-full min-h-screen flex justify-center items-center bg-gradient-to-r from-purple-600 to-blue-600">
