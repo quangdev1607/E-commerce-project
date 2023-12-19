@@ -1,12 +1,18 @@
 import moment from "moment";
 import { memo } from "react";
+import { useSelector } from "react-redux";
 import avatarDefault from "../../assets/avatar-default.jpg";
 import { renderStars } from "../../utils/helpers";
 const ReviewDisplay = ({ image = avatarDefault, name = "Anonymous", updatedAt, star, comment }) => {
+  const { current } = useSelector((state) => state.user);
   return (
     <div className="flex items-center py-3">
       <div className="p-4 flex-none">
-        <img className="w-[80px] h-[80px] rounded-full object-cover" src={image} alt="avatar" />
+        <img
+          className="w-[80px] h-[80px] rounded-full object-cover"
+          src={current?.avatar || avatarDefault}
+          alt="avatar"
+        />
       </div>
       <div className="flex flex-col flex-auto gap-1">
         <div className="flex items-center gap-2">

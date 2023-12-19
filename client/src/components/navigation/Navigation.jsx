@@ -17,9 +17,6 @@ const Navigation = () => {
           </NavLink>
         ))}
       </div>
-      <div>
-        <p>Search Item</p>
-      </div>
     </div>
   );
 };

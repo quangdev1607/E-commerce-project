@@ -1,73 +1,103 @@
-const Order = require('../models/order')
-const User = require('../models/user')
-const Coupon = require('../models/coupon')
-const { StatusCodes } = require('http-status-codes')
-const { NotFoundError, BadRequestError } = require('../errors')
+const Order = require("../models/order");
+const User = require("../models/user");
+const Coupon = require("../models/coupon");
+const { StatusCodes } = require("http-status-codes");
+const { NotFoundError, BadRequestError } = require("../errors");
 
 class OrderController {
-    async createOrder(req, res) {
-        const { userId } = req.user
-        const { coupon } = req.body
-
-        const userCart = await User.findById(userId).populate('cart.product', 'title price brand').select('cart')
-        if (!userCart) throw new NotFoundError('Cart not found')
-
-        const products = userCart?.cart?.map(el => ({
-            product: el.product._id,
-            amount: el.quantity,
-            color: el.color
-        }))
-
-
-        let total = userCart?.cart?.reduce((accum, el) => el.product.price * el.quantity + accum, 0)
-
-        const orderData = { products, total, orderedBy: userId }
-
-        if (coupon) {
-            const selectedCoupon = await Coupon.findById(coupon)
-            if (!selectedCoupon) throw new NotFoundError('Coupon not found')
-            total = Math.round(total * (1 - selectedCoupon?.discount) * 1000) / 1000 || total
-            orderData.total = total
-            orderData.coupon = coupon
-        }
-        const order = await Order.create(orderData)
-
-        res.status(StatusCodes.OK).json({
-            success: true,
-            result: order,
-        })
+  async createOrder(req, res) {
+    const { userId } = req.user;
+    const { products, total, address, status } = req.body;
+    if (address) {
+      await User.findByIdAndUpdate(userId, { address, cart: [] });
     }
-    async updateStatusOrder(req, res) {
-        const { oid } = req.params
-        if (oid.length !== 24) throw new BadRequestError('Order id is not valid')
-        const { status } = req.body
-        if (!status) throw new BadRequestError('status is required')
-        const response = await Order.findByIdAndUpdate(oid, { status }, { new: true }).select('status')
-        res.status(StatusCodes.OK).json({
-            success: response ? true : false,
-            rs: response ? response : "Cannot change status"
-        })
-    }
+    const order = await Order.create({ products, total, orderedBy: userId, status });
+    res.status(StatusCodes.OK).json({
+      success: true,
+      result: order,
+    });
+  }
+  async updateStatusOrder(req, res) {
+    const { oid } = req.params;
+    if (oid.length !== 24) throw new BadRequestError("Order id is not valid");
+    const { status } = req.body;
+    if (!status) throw new BadRequestError("status is required");
+    const response = await Order.findByIdAndUpdate(oid, { status }, { new: true }).select("status");
+    res.status(StatusCodes.OK).json({
+      success: response ? true : false,
+      rs: response ? response : "Cannot change status",
+    });
+  }
 
-    async getOrderByUser(req, res) {
-        const { userId } = req.user
-        const userOrders = await Order.find({ orderedBy: userId }).populate('orderedBy', 'firstname lastname email')
-        if (!userOrders) throw new NotFoundError('order not found')
-        res.status(StatusCodes.OK).json({
-            success: true,
-            userOrders
-        })
-    }
+  async getOrderByUser(req, res) {
+    const queries = { ...req.query };
+    const { userId } = req.user;
+    const excludedFields = ["limit", "sort", "page", "fields"];
+    excludedFields.forEach((item) => delete queries[item]);
 
-    async getOrdersByAdmin(req, res) {
-        const allOrders = await Order.find().populate('orderedBy', 'email')
-        res.status(200).json({
-            success: true,
-            total: allOrders.length,
-            allOrders
-        })
+    let queryString = JSON.stringify(queries);
+    queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, (matchEl) => `$${matchEl}`);
+    const formatedQueries = JSON.parse(queryString);
+
+    // Filtering
+    // if (queries?.title) formatedQueries.title = { $regex: queries.title, $options: "i" };
+    // if (queries?.brand) formatedQueries.brand = { $regex: queries.brand, $options: "i" };
+
+    // let queryObject = {};
+    // if (queries.q) {
+    //   delete formatedQueries.q;
+    //   queryObject = {
+    //     $or: [
+    //       { color: { $regex: queries.q, $options: "i" } },
+    //       { title: { $regex: queries.q, $options: "i" } },
+    //       { category: { $regex: queries.q, $options: "i" } },
+    //       { brand: { $regex: queries.q, $options: "i" } },
+    //     ],
+    //   };
+    // }
+    const qr = { ...formatedQueries, orderedBy: userId };
+    let result = Order.find(qr);
+
+    // Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      result = result.sort(sortBy);
+    } else {
+      result = result.sort("-createdAt"); // Auto sắp xếp theo latest
     }
 
+    // Fields
+    if (req.query.fields) {
+      const fieldList = req.query.fields.split(",").join(" ");
+      result = result.select(fieldList);
+    } else {
+      result = result.select("-__v");
+    }
+
+    // Paginations:
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || process.env.LIMIT_PRODUCT;
+    const skip = (page - 1) * limit;
+    result = result.skip(skip).limit(limit);
+
+    const orders = await result;
+    if (!orders) throw new NotFoundError("Product not found");
+    const counts = await Order.find(qr).countDocuments();
+    res.status(StatusCodes.OK).json({
+      success: orders ? true : false,
+      counts,
+      data: orders ? orders : "Something wrong",
+    });
+  }
+
+  async getOrdersByAdmin(req, res) {
+    const allOrders = await Order.find().populate("orderedBy", "email");
+    res.status(200).json({
+      success: true,
+      total: allOrders.length,
+      allOrders,
+    });
+  }
 }
 
-module.exports = new OrderController()
+module.exports = new OrderController();

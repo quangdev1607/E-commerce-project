@@ -1,7 +1,9 @@
 import { memo } from "react";
 import { useSelector } from "react-redux";
+import { createSearchParams } from "react-router-dom";
+import withBaseComponent from "../../hocs/withBaseComponent";
 
-const HotCollections = () => {
+const HotCollections = ({ navigate }) => {
   const { categories } = useSelector((state) => state.app);
   return (
     <>
@@ -18,6 +20,14 @@ const HotCollections = () => {
                 <h1 className=" font-semibold uppercase text-sm ">{cate.category}</h1>
                 {cate.brand.map((item, idx) => (
                   <span
+                    onClick={() => {
+                      navigate({
+                        pathname: `/${cate.category.toLowerCase()}`,
+                        search: createSearchParams({
+                          brand: item.toUpperCase(),
+                        }).toString(),
+                      });
+                    }}
                     className="font-light text-[#808080] text-sm  pt-2 hover:text-main cursor-pointer"
                     key={idx}
                   >{`>${item}`}</span>
@@ -30,4 +40,4 @@ const HotCollections = () => {
   );
 };
 
-export default memo(HotCollections);
+export default withBaseComponent(memo(HotCollections));

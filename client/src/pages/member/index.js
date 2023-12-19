@@ -1,3 +1,4 @@
+export { default as Checkout } from "./Checkout";
 export { default as History } from "./History";
 export { default as MemberLayout } from "./MemberLayout";
 export { default as MyCart } from "./MyCart";

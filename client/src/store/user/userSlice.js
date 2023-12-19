@@ -9,6 +9,7 @@ export const userSlice = createSlice({
     current: null,
     token: null,
     msg: "",
+    currentCart: [],
   },
 
   reducers: {
@@ -22,6 +23,15 @@ export const userSlice = createSlice({
     clearMessage: (state, action) => {
       state.msg = "";
     },
+    updateCart: (state, action) => {
+      const { pid, quantity, color } = action.payload;
+      const updatingCart = JSON.parse(JSON.stringify(state.currentCart));
+      state.currentCart = updatingCart.map((el) => {
+        if (el.color === color && el.product._id === pid) {
+          return { ...el, quantity };
+        } else return el;
+      });
+    },
   },
 
   extraReducers: (builder) => {
@@ -33,6 +43,7 @@ export const userSlice = createSlice({
       state.isLoading = false;
       state.current = action.payload;
       state.isLoggedIn = true;
+      state.currentCart = action.payload.cart;
     });
 
     builder.addCase(getCurrent.rejected, (state, action) => {
@@ -45,5 +56,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { login, logout, clearMessage } = userSlice.actions;
+export const { login, logout, clearMessage, updateCart } = userSlice.actions;
 export default userSlice.reducer;

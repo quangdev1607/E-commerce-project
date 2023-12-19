@@ -3,7 +3,13 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { apiUpdateProduct } from "../../../api";
-import { Button, InputForm, Loading, Markdown, Select } from "../../../components";
+import {
+  Button,
+  InputForm,
+  Loading,
+  Markdown,
+  Select,
+} from "../../../components";
 import { showModal } from "../../../store/app/appSlice";
 import { getBase64, validate } from "../../../utils/helpers";
 import icons from "../../../utils/icons";
@@ -33,7 +39,7 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
     (value) => {
       setPayLoad(value);
     },
-    [payLoad]
+    [payLoad],
   );
 
   useEffect(() => {
@@ -78,11 +84,15 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
   const handleUpdateProduct = async (data) => {
     const invalids = validate(payLoad, setInvalidFields);
     if (invalids === 0) {
-      if (data.category) data.category = categories?.find((el) => el.category === data.category)?.category;
+      if (data.category)
+        data.category = categories?.find(
+          (el) => el.category === data.category,
+        )?.category;
       const finalData = { ...data, ...payLoad };
       const formData = new FormData();
       for (let i of Object.entries(finalData)) formData.append(i[0], i[1]);
-      if (finalData?.thumbnail.length !== 0) formData.append("thumbnail", finalData.thumbnail[0]);
+      if (finalData?.thumbnail.length !== 0)
+        formData.append("thumbnail", finalData.thumbnail[0]);
       if (finalData?.images.length !== 0) {
         for (let image of finalData.images) formData.append("images", image);
       }
@@ -102,7 +112,7 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
         setEditedProduct(null);
         render();
         Swal.fire("Congratulation!", "Product updated successfully", "success");
-      }
+      } else Swal.fire("Oops", response.msg, "error");
     }
   };
 
@@ -111,7 +121,8 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
   }, [watch("images")]);
 
   useEffect(() => {
-    if (watch("thumbnail")?.length > 0) handlePreviewThumbnail(watch("thumbnail")[0]);
+    if (watch("thumbnail")?.length > 0)
+      handlePreviewThumbnail(watch("thumbnail")[0]);
   }, [watch("thumbnail")]);
   return (
     <div className="bg-gray-100">
@@ -177,7 +188,10 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
           <div className="flex  w-full gap-4 my-6">
             <Select
               label={"Category"}
-              options={categories?.map((el) => ({ code: el.category, value: el.category }))}
+              options={categories?.map((el) => ({
+                code: el.category,
+                value: el.category,
+              }))}
               register={register}
               id="category"
               validate={{ required: "Select can not be none" }}
@@ -205,22 +219,49 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
           />
           <div className="flex flex-col my-8">
             <label htmlFor="thumbnail">Edit thumbnail</label>
-            <input type="file" id="thumbnail" {...register("thumbnail")} errors={errors} />
-            {errors["thumbnail"] && <small className="text-xs text-main">{errors["thumbnail"]?.message}</small>}
+            <input
+              type="file"
+              id="thumbnail"
+              {...register("thumbnail")}
+              errors={errors}
+            />
+            {errors["thumbnail"] && (
+              <small className="text-xs text-main">
+                {errors["thumbnail"]?.message}
+              </small>
+            )}
           </div>
           {preview.thumbnail ? (
             <div>
-              <img src={preview.thumbnail} alt="thumbnail" className="w-[200px] object-contain" />
+              <img
+                src={preview.thumbnail}
+                alt="thumbnail"
+                className="w-[200px] object-contain"
+              />
             </div>
           ) : (
             <div>
-              <img src={editedProduct?.thumbnail} alt="thumbnail" className="w-[200px] object-contain" />
+              <img
+                src={editedProduct?.thumbnail}
+                alt="thumbnail"
+                className="w-[200px] object-contain"
+              />
             </div>
           )}
           <div className="flex flex-col my-8">
             <label htmlFor="images">Edit images</label>
-            <input type="file" multiple id="images" {...register("images")} errors={errors} />
-            {errors["images"] && <small className="text-xs text-main">{errors["images"]?.message}</small>}
+            <input
+              type="file"
+              multiple
+              id="images"
+              {...register("images")}
+              errors={errors}
+            />
+            {errors["images"] && (
+              <small className="text-xs text-main">
+                {errors["images"]?.message}
+              </small>
+            )}
           </div>
           {preview?.images.length > 0 ? (
             <div className="flex w-full gap-3 flex-wrap">
@@ -234,13 +275,19 @@ const UpdateProduct = ({ editedProduct, render, setEditedProduct }) => {
             <div className="flex w-fill gap-3 flex-wrap">
               {editedProduct?.images.map((img, idx) => (
                 <div key={idx} className="w-fit relative">
-                  <img className="w-[250px] h-[250px] object-contain" alt="product" src={img} />
+                  <img
+                    className="w-[250px] h-[250px] object-contain"
+                    alt="product"
+                    src={img}
+                  />
                 </div>
               ))}{" "}
             </div>
           )}
           <Button
-            style={"my-4 px-4 py-2 rounded-md text-white bg-main text-semibold hover:opacity-70"}
+            style={
+              "my-4 px-4 py-2 rounded-md text-white bg-main text-semibold hover:opacity-70"
+            }
             type="submit"
             name={"Update new Product"}
           />

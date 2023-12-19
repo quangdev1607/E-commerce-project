@@ -5,6 +5,7 @@ const { createAccessToken, createRefreshToken } = require("../middlewares/jwt");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const crypto = require("crypto");
+const user = require("../models/user");
 
 class UserController {
   // async register(req, res) {
@@ -182,8 +183,9 @@ class UserController {
   async getOneUser(req, res) {
     const { userId } = req.user;
     const user = await User.findById({ _id: userId })
+      .select("-refreshToken -password")
       .populate("cart.product", "title price brand totalRatings thumbnail category")
-      .select("-refreshToken -password");
+      .populate("wishlist", "title price thumbnail color category brand");
     return res.status(StatusCodes.OK).json({
       success: user ? true : false,
       result: user ? user : "User not found",
@@ -204,10 +206,9 @@ class UserController {
 
   async updateUser(req, res) {
     const { userId } = req.user;
-    const { firstname, lastname, email, mobile } = req.body;
-    const data = { firstname, lastname, email, mobile };
-
-    if (req.files) data.avatar = req.files["avatar"][0].path;
+    const { firstname, lastname, email, mobile, address } = req.body;
+    const data = { firstname, lastname, email, mobile, address };
+    if (Object.keys(req.files).length > 0) data.avatar = req.files["avatar"][0].path;
     if (!userId || Object.keys(req.body).length === 0) throw new BadRequestError("User not found");
     const user = await User.findByIdAndUpdate({ _id: userId }, { ...data }, { new: true }).select(
       "-password -role -refreshToken"
@@ -408,6 +409,39 @@ class UserController {
       success: response ? true : false,
       msg: response ? "Cart removed" : "Something wrong",
     });
+  }
+
+  async addWishList(req, res) {
+    const { pid } = req.params;
+    const { userId } = req.user;
+    if (pid.length !== 24) throw new BadRequestError("Product ID is not valid");
+
+    const user = await User.findById(userId);
+    if (!user) throw new BadRequestError("User not found");
+    console.log(pid);
+    console.log(user);
+    const hasAddedProduct = user.wishlist?.find((el) => el.toString() === pid);
+    if (hasAddedProduct) {
+      const response = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { wishlist: pid } },
+        { new: true }
+      );
+      return res.status(StatusCodes.OK).json({
+        success: response ? true : false,
+        msg: response ? "Removed from wishlist" : "Something wrong",
+      });
+    } else {
+      const response = await User.findByIdAndUpdate(
+        userId,
+        { $push: { wishlist: pid } },
+        { new: true }
+      );
+      return res.status(200).json({
+        success: response ? true : false,
+        msg: response ? "Added to wishlist" : "Something wrong",
+      });
+    }
   }
 }
 

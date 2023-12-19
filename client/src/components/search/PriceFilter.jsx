@@ -11,9 +11,10 @@ const PriceFilter = ({
   maxStart,
   priceValues,
   handleSubmitPriceFilter,
+  id,
 }) => {
   return (
-    <div className="flex flex-col gap-3 min-w-[300px]">
+    <div id={id} className="flex flex-col gap-3 min-w-[300px]">
       <div className="flex items-center justify-around mt-4 gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium min-w-[105px] whitespace-nowrap">{`${formatCash(

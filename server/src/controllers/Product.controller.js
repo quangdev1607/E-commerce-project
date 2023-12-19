@@ -124,6 +124,7 @@ class ProductController {
       };
     }
     const qr = { ...colorQueryObject, ...formatedQueries, ...queryObject };
+
     let result = Product.find(qr);
 
     // Sorting

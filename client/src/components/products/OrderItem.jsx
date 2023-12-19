@@ -1,12 +1,13 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { SelectQuantity } from "../../components";
 import withBaseComponent from "../../hocs/withBaseComponent";
+import { updateCart } from "../../store/user/userSlice";
 import { formatCash, roundCash } from "../../utils/helpers";
 
-const OrderItem = ({ el, dispatch, navigate, location }) => {
+const OrderItem = ({ dispatch, el, navigate, productQuantity = 1 }) => {
   const { current } = useSelector((state) => state.user);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(productQuantity);
   const handleQuantity = useCallback(
     (number) => {
       if (!Number(number) || Number(number) < 1) return;
@@ -14,6 +15,10 @@ const OrderItem = ({ el, dispatch, navigate, location }) => {
     },
     [quantity]
   );
+
+  useEffect(() => {
+    dispatch(updateCart({ pid: el?.product._id, quantity, color: el?.color }));
+  }, [quantity]);
 
   const handleQuantityButton = useCallback(
     (flag) => {
@@ -49,7 +54,7 @@ const OrderItem = ({ el, dispatch, navigate, location }) => {
         />
       </span>
       <span className=" col-span-3 w-full text-center text-xl font-bold">{`${formatCash(
-        roundCash(el?.price)
+        roundCash(el?.price * quantity)
       )} VND`}</span>
     </section>
   );

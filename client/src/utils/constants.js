@@ -113,3 +113,18 @@ export const ratingOptions = [
     text: "Very good",
   },
 ];
+
+export const statusOrder = [
+  {
+    label: "All",
+    value: null,
+  },
+  {
+    label: "Processing",
+    value: "Processing",
+  },
+  {
+    label: "Succeed",
+    value: "Succeed",
+  },
+];

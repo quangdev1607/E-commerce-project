@@ -11,7 +11,7 @@ import path from "../../utils/path";
 import { Button } from "./../../components";
 
 const Cart = ({ dispatch, navigate }) => {
-  const { current } = useSelector((state) => state.user);
+  const { currentCart } = useSelector((state) => state.user);
   const { IoTrashBin } = icons;
   const handleRemoveCart = async (pid) => {
     const response = await apiRemoveCart(pid);
@@ -20,17 +20,20 @@ const Cart = ({ dispatch, navigate }) => {
     }
   };
   return (
-    <div onClick={(e) => e.stopPropagation()} className="grid  grid-rows-10 w-[500px] h-screen bg-black text-white p-6">
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="grid grid-rows-10 w-[500px] max-h-screen overflow-y-auto bg-black text-white p-6"
+    >
       <header className="flex justify-between items-center border-b border-b-white px-2 row-span-1 h-full">
         <h1 className="font-semibold text-2xl uppercase">Your cart</h1>
         <span onClick={() => dispatch(showCartModal())} className="text-lg cursor-pointer hover:opacity-50  ">
           x
         </span>
       </header>
-      <section className=" flex flex-col gap-6 row-span-8  max-h-full overflow-y-auto py-3">
-        {current?.cart.length === 0 && <span className="text-xs italic">Your cart is empty</span>}
-        {current?.cart &&
-          current?.cart.map((el) => (
+      <section className=" flex flex-col gap-6 row-span-7  max-h-full overflow-y-auto py-3">
+        {currentCart.length === 0 && <span className="text-xs italic">Your cart is empty</span>}
+        {currentCart &&
+          currentCart.map((el) => (
             <div className="flex items-center justify-between " key={el._id}>
               <div className="flex gap-4">
                 <div className="flex items-center justify-center">
@@ -39,8 +42,9 @@ const Cart = ({ dispatch, navigate }) => {
 
                 <div className="flex flex-col gap-2">
                   <span className="text-xl font-bold text-amber-500">{el?.title}</span>
-                  <span>{`${formatCash(roundCash(el?.price))} VND`}</span>
-                  <span>{el?.color}</span>
+                  <span>{`Price: ${formatCash(roundCash(el?.price))} VND`}</span>
+                  <span>{`Color: ${el?.color}`}</span>
+                  <span>{`Quantity: ${el?.quantity}`}</span>
                 </div>
               </div>
 
@@ -52,14 +56,16 @@ const Cart = ({ dispatch, navigate }) => {
             </div>
           ))}
       </section>
-      <section className="flex flex-col gap-4 row-span-1 h-full  border-t border-t-white px-2 ">
+      <section className="flex flex-col gap-4 row-span-2 h-full justify-center border-t border-t-white px-2  ">
         <div className="flex items-center mt-4 justify-between">
           <span className="uppercase ">Subtotal: </span>
           <span className="text-2xl font-semibold">
-            {formatCash(roundCash(current?.cart?.reduce((accumulate, el) => accumulate + Number(el?.price), 0)))} VND
+            {formatCash(
+              roundCash(currentCart?.reduce((accumulate, el) => accumulate + Number(el?.price) * el.quantity, 0))
+            )}{" "}
+            VND
           </span>
         </div>
-
         <Button
           handleOnClick={() => {
             dispatch(showCartModal());

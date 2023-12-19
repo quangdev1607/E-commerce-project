@@ -45,3 +45,17 @@ export const apiAddVariant = (data, pid) =>
     method: "put",
     data,
   });
+
+export const apiCreateOrder = (data) =>
+  axios({
+    url: "/order/",
+    method: "post",
+    data,
+  });
+
+export const apiGetOrders = (params) =>
+  axios({
+    url: "/order/user",
+    method: "get",
+    params,
+  });

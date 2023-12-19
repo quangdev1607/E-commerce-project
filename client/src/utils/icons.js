@@ -7,6 +7,7 @@ import {
   FaGift,
   FaHeadphones,
   FaHeart,
+  FaHistory,
   FaPhone,
   FaPhoneAlt,
   FaShieldAlt,
@@ -54,6 +55,7 @@ const icons = {
   IoAdd,
   BsFillCartCheckFill,
   FaCartPlus,
+  FaHistory,
 };
 
 export const categoriesIcon = [FiSmartphone, FiTablet, BsLaptopFill, FaHeadphones, PiTelevisionFill, FiPrinter];

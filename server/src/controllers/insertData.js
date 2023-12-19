@@ -18,7 +18,7 @@ const insertData = async (product) => {
     sold: Math.floor(Math.random() * 100),
     images: product?.images.photos,
     thumbnail: product?.images.thumbnail,
-    color: product?.variants?.find((el) => el?.label === "Color")?.options[0],
+    color: product?.variants?.find((el) => el?.label === "Color")?.options[0] || "Black",
     totalRatings: 0,
   });
 };

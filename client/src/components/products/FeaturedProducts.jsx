@@ -1,8 +1,11 @@
 import { memo, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { apiGetProducts } from "../../api";
+import withBaseComponent from "../../hocs/withBaseComponent";
 import { formatCash, renderStars, roundCash } from "../../utils/helpers";
+import path from "../../utils/path";
 
-const FeaturedProducts = () => {
+const FeaturedProducts = ({ navigate }) => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const fetchFeaturedProducts = async () => {
     const response = await apiGetProducts({ limit: 9, sort: "-totalRatings" });
@@ -22,7 +25,12 @@ const FeaturedProducts = () => {
           <div key={item._id} className="flex items-center justify-start border p-4">
             <img className="pr-3" width={84} height={84} src={item.thumbnail} alt="featured" />
             <div className="flex flex-col  gap-y-2">
-              <span className="line-clamp-1 text-[14px] font-medium">{item.title}</span>
+              <Link
+                to={`/${item.category.toLowerCase()}/${item._id}/${item.title}`}
+                className="line-clamp-1 text-[14px] font-medium hover:text-main"
+              >
+                {item.title}
+              </Link>
               <span className="flex">{renderStars(item?.totalRatings)}</span>
 
               <span className="text-xs font-normal">{`${formatCash(roundCash(item?.price))} VND`}</span>
@@ -34,4 +42,4 @@ const FeaturedProducts = () => {
   );
 };
 
-export default memo(FeaturedProducts);
+export default withBaseComponent(memo(FeaturedProducts));

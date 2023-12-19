@@ -1,7 +1,12 @@
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createSearchParams, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import Swal from "sweetalert2";
 import { apiDeleteProduct, apiGetProducts } from "../../../api";
 import { InputForm, Pagination, Variants } from "../../../components";
@@ -77,12 +82,20 @@ const ManageProducts = () => {
     <div className="relative">
       {editedProduct && (
         <div className="absolute inset-0 bg-gray-100  min-h-screen z-50">
-          <UpdateProduct setEditedProduct={setEditedProduct} editedProduct={editedProduct} render={render} />
+          <UpdateProduct
+            setEditedProduct={setEditedProduct}
+            editedProduct={editedProduct}
+            render={render}
+          />
         </div>
       )}
       {variants && (
         <div className="absolute inset-0 bg-gray-100  min-h-screen z-50">
-          <Variants setVariants={setVariants} variants={variants} render={render} />
+          <Variants
+            setVariants={setVariants}
+            variants={variants}
+            render={render}
+          />
         </div>
       )}
 
@@ -126,10 +139,17 @@ const ManageProducts = () => {
             {products?.data?.map((product, idx) => (
               <tr className="border-b-2 border-slate-500" key={product._id}>
                 <td className="border text-center border-slate-700 p-2">
-                  {idx + ((+params.get("page") > 1 ? params.get("page") - 1 : 0) * +import.meta.env.VITE_LIMIT + 1)}
+                  {idx +
+                    ((+params.get("page") > 1 ? params.get("page") - 1 : 0) *
+                      +import.meta.env.VITE_LIMIT +
+                      1)}
                 </td>
                 <td className=" border-r border-slate-500 p-2">
-                  <img src={product?.thumbnail} alt="thumbnail" className="w-12 h-12 object-contain" />
+                  <img
+                    src={product?.thumbnail}
+                    alt="thumbnail"
+                    className="w-12 h-12 object-contain"
+                  />
                 </td>
                 <td className=" border-r border-slate-500 p-2">
                   <span>{product?.title}</span>
@@ -159,7 +179,9 @@ const ManageProducts = () => {
                   <span>{product?.variants.length}</span>
                 </td>
 
-                <td className="p-2 border-r border-slate-500">{moment(product.updatedAt).format("DD/MM/YYYY")}</td>
+                <td className="p-2 border-r border-slate-500">
+                  {moment(product.updatedAt).format("DD/MM/YYYY")}
+                </td>
                 <td className="p-2  ">
                   <span
                     onClick={() => setEditedProduct(product)}

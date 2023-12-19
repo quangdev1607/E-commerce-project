@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { SelectOption } from "..";
-import { apiAddToCart } from "../../api";
+import { apiAddToCart, apiAddWishlist } from "../../api";
 import notFoundProductImg from "../../assets/image-not-available.png";
 import newProduct from "../../assets/new-product.png";
 import withBaseComponent from "../../hocs/withBaseComponent";
@@ -35,7 +35,18 @@ const ProductDisplay = ({ productData, noLabel, dispatch }) => {
       if (response.success) Swal.fire("Done", response.msg, "success").then(() => dispatch(getCurrent()));
       else Swal.fire("Oops", response.msg, "error");
     }
-    if (option === "WISHLIST") console.log("Wishlist");
+    if (option === "WISHLIST") {
+      if (!current)
+        return Swal.fire({
+          title: "PLease login",
+          icon: "info",
+        });
+      const response = await apiAddWishlist(productData?._id);
+      if (response.success) {
+        Swal.fire("Done", response.msg, "success");
+        dispatch(getCurrent());
+      }
+    }
     if (option === "QUICKVIEW")
       dispatch(
         showModal({ isShowModal: true, modalChildren: <DetailProduct data={{ pid: productData._id }} isQuickView /> })
@@ -58,18 +69,27 @@ const ProductDisplay = ({ productData, noLabel, dispatch }) => {
           <div
             className={`absolute bottom-1/3 left-0 right-0 flex items-center justify-center gap-2 animate-slide-top `}
           >
-            <span title="Add to wish list" onClick={(e) => handleClickOptions(e, "WISHLIST")}>
-              <SelectOption icon={<FaHeart />} />
+            <span
+              title={current?.wishlist?.some((el) => el === productData._id) ? "Added" : "Add to wishlist"}
+              onClick={(e) => handleClickOptions(e, "WISHLIST")}
+            >
+              <SelectOption
+                icon={<FaHeart color={current?.wishlist?.some((el) => el._id === productData._id) ? "red" : "gray"} />}
+              />
             </span>
-            {current?.cart.some((el) => el.product._id === productData._id) ? (
-              <span title="Added">
-                <SelectOption icon={<BsFillCartCheckFill color="green" />} />
-              </span>
-            ) : (
-              <span title="Add to cart" onClick={(e) => handleClickOptions(e, "CART")}>
-                <SelectOption icon={<FaCartPlus />} />
-              </span>
-            )}
+
+            <span
+              onClick={(e) => handleClickOptions(e, "CART")}
+              title={current?.cart.some((el) => el.product._id === productData._id) ? "Added" : "Add to cart"}
+            >
+              <SelectOption
+                icon={
+                  <BsFillCartCheckFill
+                    color={current?.cart.some((el) => el.product._id === productData._id) ? "red" : "gray"}
+                  />
+                }
+              />
+            </span>
 
             <span title="Quick view" onClick={(e) => handleClickOptions(e, "QUICKVIEW")}>
               <SelectOption icon={<FaEye />} />
@@ -86,7 +106,7 @@ const ProductDisplay = ({ productData, noLabel, dispatch }) => {
         <div className="flex flex-col gap-3 pt-5 mt-6">
           <span className="flex h-4">{renderStars(productData?.totalRatings)}</span>
           <Link
-            to={`/${productData.category.toLowerCase()}/${productData._id}/${productData.title}`}
+            to={`/${productData?.category.toLowerCase()}/${productData._id}/${productData?.title}`}
             className="line-clamp-1 hover:text-main"
           >
             {productData?.title}

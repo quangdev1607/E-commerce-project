@@ -27,10 +27,7 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
 
   const [params] = useSearchParams();
   useEffect(() => {
-    let param = [];
-    for (let i of params.entries()) param.push(i);
-    const queries = {};
-    for (let i of param) queries[i[0]] = i[1];
+    const queries = Object.fromEntries([...params]);
     if (selected.length > 0) {
       queries.color = selected.map((item) => item.toUpperCase()).join(",");
       queries.page = 1;
@@ -43,10 +40,7 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
 
   useEffect(() => {
     if (priceValues.some((el) => el !== 0)) {
-      let param = [];
-      for (let i of params.entries()) param.push(i);
-      const queries = {};
-      for (let i of param) queries[i[0]] = i[1];
+      const queries = Object.fromEntries([...params]);
       queries.page = 1;
       queries.from = priceValues[0];
       queries.to = priceValues[1];
@@ -70,6 +64,7 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
     fetchProductPrice();
     setPriceValues([lowestPrice, highestPrice]);
   }, []);
+
   return (
     <div
       onClick={() => changeActiveFilter(name)}
@@ -79,6 +74,7 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
       <FaAngleDown />
       {activeFilter === name && (
         <div
+          id="1"
           onClick={(e) => e.stopPropagation()}
           className=" cursor-default z-10 absolute top-[calc(100%+3px)] left-[-1px] w-fit p-4 bg-white border border-black min-w-[150px]"
         >
@@ -119,6 +115,7 @@ const SearchItem = ({ name, activeFilter, changeActiveFilter, type = "checkbox" 
 
           {type === "input" && (
             <PriceFilter
+              id={"2"}
               minPrice={priceValues[0]}
               maxPrice={priceValues[1]}
               minStart={lowestPrice}

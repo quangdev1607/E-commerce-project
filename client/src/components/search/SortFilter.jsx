@@ -1,13 +1,37 @@
-import { memo } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
+import { createSearchParams, useParams, useSearchParams } from "react-router-dom";
+import withBaseComponent from "../../hocs/withBaseComponent";
 import { options } from "../../utils/constants";
 
-const SortFilter = ({ value, changeSortValue }) => {
+const SortFilter = ({ navigate }) => {
+  const [sort, setSort] = useState("");
+  const { category } = useParams();
+  const [params] = useSearchParams();
+
+  const handleSortSelect = useCallback(
+    (value) => {
+      setSort(value);
+    },
+    [sort]
+  );
+
+  useEffect(() => {
+    const queries = Object.fromEntries([...params]);
+    console.log(queries);
+    if (sort !== "") {
+      queries.sort = sort;
+      navigate({
+        pathname: `/${category}`,
+        search: createSearchParams(queries).toString(),
+      });
+    }
+  }, [sort]);
   return (
     <div className="flex flex-col gap-4 pr-2 ">
       <label htmlFor="sortItems">Sort by:</label>
       <select
-        value={value}
-        onChange={(e) => changeSortValue(e.target.value)}
+        value={sort}
+        onChange={(e) => handleSortSelect(e.target.value)}
         id="sortItems"
         className="bg-gray-50 border border-gray-300 p-1"
       >
@@ -21,5 +45,4 @@ const SortFilter = ({ value, changeSortValue }) => {
     </div>
   );
 };
-
-export default memo(SortFilter);
+export default withBaseComponent(memo(SortFilter));

@@ -1,12 +1,9 @@
 import clsx from "clsx";
 import { Fragment, memo, useState } from "react";
-import { AiOutlineCaretDown, AiOutlineCaretRight } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import avatar from "../../assets/avatar-default.jpg";
-import logo from "../../assets/logo.png";
 import { memberSideBarItems } from "../../utils/memberConstants";
-import path from "../../utils/path";
 
 const activeStyles = "px-4 py-2 flex items-center gap-2  bg-gray-300";
 const notActiveStyles = "px-4 py-2 flex items-center gap-2  hover:bg-gray-300";

@@ -1,40 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { createSearchParams, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { apiGetProducts } from "../../api";
-import { BreadCrumb, Pagination, ProductDisplay, SearchItem, SortFilter } from "../../components";
+import { BreadCrumb, Button, Pagination, ProductDisplay, SearchItem, SortFilter } from "../../components";
+import withBaseComponent from "../../hocs/withBaseComponent";
 
-const Products = () => {
+const Products = ({ location, navigate }) => {
   const { category } = useParams();
-  const navigate = useNavigate();
 
   const [params] = useSearchParams();
 
   const [products, setProducts] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null);
 
-  const [sort, setSort] = useState("");
-
-  const handleSortSelect = useCallback(
-    (value) => {
-      setSort(value);
-    },
-    [sort]
-  );
-
-  useEffect(() => {
-    if (sort !== "") {
-      navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({ sort }).toString(),
-      });
-    }
-  }, [sort]);
-
   const fetchProductData = async (queries) => {
-    const response = await apiGetProducts({
-      ...queries,
-      category: category.charAt(0).toUpperCase() + category.slice(1),
-    });
+    if (category && category !== "products") queries.category = category.charAt(0).toUpperCase() + category.slice(1);
+    const response = await apiGetProducts(queries);
     if (response.success) setProducts(response);
   };
 
@@ -58,6 +38,9 @@ const Products = () => {
     },
     [activeFilter]
   );
+  const handleReset = () => {
+    navigate(location.pathname);
+  };
 
   return (
     <main className="w-full">
@@ -73,10 +56,13 @@ const Products = () => {
           <div className="flex  gap-4  mt-3 ">
             <SearchItem type="input" changeActiveFilter={changeActiveFilter} activeFilter={activeFilter} name="Price" />
             <SearchItem changeActiveFilter={changeActiveFilter} activeFilter={activeFilter} name="Color" />
+            {"page" && "sort" in Object.fromEntries([...params]) && (
+              <Button handleOnClick={() => handleReset()} name={"Reset"} />
+            )}
           </div>
         </div>
         <div className="w-1/5">
-          <SortFilter value={sort} changeSortValue={handleSortSelect} />
+          <SortFilter />
         </div>
       </section>
       <section className="w-main m-auto mt-4 grid grid-cols-4 gap-4">
@@ -92,4 +78,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default withBaseComponent(Products);

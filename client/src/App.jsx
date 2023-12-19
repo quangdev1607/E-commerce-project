@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { Cart, Modal } from "./components";
 import { AdminLayout, CreateProducts, DashBoard, ManageOrders, ManageProducts, ManageUsers } from "./pages/admin";
-import { History, MemberLayout, MyCart, Personal, WishList } from "./pages/member";
+import { Checkout, History, MemberLayout, MyCart, Personal, WishList } from "./pages/member";
 import {
   Blogs,
   Contact,
@@ -32,7 +32,7 @@ function App() {
     dispatch(getCategories());
   }, []);
   return (
-    <div className=" h-screen font-main ">
+    <div className=" h-full font-main relative ">
       {isShowCartModal && (
         <div
           onClick={() => dispatch(showCartModal())}
@@ -43,6 +43,7 @@ function App() {
       )}
       {isShowModal && <Modal>{modalChildren}</Modal>}
       <Routes>
+        <Route path={path.CHECKOUT} element={<Checkout />}></Route>
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />}></Route>
           <Route path={path.BLOGS} element={<Blogs />}></Route>
@@ -50,7 +51,7 @@ function App() {
           <Route path={path.SERVICES} element={<Services />}></Route>
           <Route path={path.CONTACT} element={<Contact />}></Route>
           <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}></Route>
-          <Route path={path.PRODUCTS} element={<Products />}></Route>
+          <Route path={path.PRODUCTS__CATEGORY} element={<Products />}></Route>
           <Route path={path.DETAIL_CART} element={<DetailCart />}></Route>
           <Route path={path.ALL} element={<Home />}></Route>
         </Route>
@@ -66,7 +67,6 @@ function App() {
         </Route>
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />}></Route>
-          <Route path={path.MYCART} element={<MyCart id="cart" />}></Route>
           <Route path={path.WISHLIST} element={<WishList />}></Route>
           <Route path={path.HISTORY} element={<History />}></Route>
         </Route>

@@ -14,6 +14,7 @@ const {
   addUserCart,
   handleRegister,
   removeCartProduct,
+  addWishList,
 } = require("../controllers/User.controller");
 const router = require("express").Router();
 const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
@@ -36,6 +37,7 @@ router.put(
 );
 router.put("/address", verifyAccessToken, updateUserAddress);
 router.put("/cart", verifyAccessToken, addUserCart);
+router.put("/wishlist/:pid", verifyAccessToken, addWishList);
 router.delete("/remove-cart/:pid", verifyAccessToken, removeCartProduct);
 router.delete("/:userId", verifyAccessToken, isAdmin, deleteUser);
 router.put("/:userId", verifyAccessToken, isAdmin, updateUserByAdmin);

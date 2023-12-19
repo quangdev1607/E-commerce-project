@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import DOMPurify from "dompurify";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSearchParams, useNavigate, useParams } from "react-router-dom";
 import Slider from "react-slick";
@@ -77,7 +77,9 @@ const DetailProduct = ({ isQuickView, data }) => {
         if (rs.isConfirmed)
           navigate({
             pathname: `/${path.LOGIN}`,
-            search: createSearchParams({ redirect: location.pathname }).toString(),
+            search: createSearchParams({
+              redirect: location.pathname,
+            }).toString(),
           });
       });
     if (isVariant) {
@@ -104,10 +106,12 @@ const DetailProduct = ({ isQuickView, data }) => {
       else Swal.fire("Oops", response.msg, "error");
     }
   };
+  const titleRef = useRef();
   useEffect(() => {
     if (pid) {
       fetchProductData();
       window.scrollTo(0, 0);
+      titleRef.current.scrollIntoView({ block: "center" });
     }
   }, [pid]);
 
@@ -124,7 +128,7 @@ const DetailProduct = ({ isQuickView, data }) => {
   }, [product]);
 
   return (
-    <main onClick={(e) => e.stopPropagation()} className="w-full bg-white ">
+    <main ref={titleRef} onClick={(e) => e.stopPropagation()} className="w-full bg-white ">
       {!isQuickView && (
         <section className="flex flex-col items-center h-[81px] bg-[#F7F7F7]">
           <div className="w-main ">
@@ -140,7 +144,7 @@ const DetailProduct = ({ isQuickView, data }) => {
       )}
 
       <section className="w-main flex m-auto mt-4">
-        <div className="w-2/5 flex flex-col gap-4">
+        <div className=" w-2/5 flex flex-col gap-4">
           <img
             src={isVariant ? product?.variants.find((el) => el.sku === isVariant)?.thumbnail : product?.thumbnail}
             alt="thumb"
@@ -190,7 +194,9 @@ const DetailProduct = ({ isQuickView, data }) => {
             {product?.description?.spec?.length === 1 && (
               <div
                 className="text-sm"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product?.description.spec) }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(product?.description.spec),
+                }}
               ></div>
             )}
           </ul>

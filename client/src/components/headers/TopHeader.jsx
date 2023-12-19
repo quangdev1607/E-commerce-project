@@ -23,9 +23,19 @@ const TopHeader = () => {
 
   useEffect(() => {
     if (msg)
-      Swal.fire("Oops!", msg, "info").then(() => {
-        dispatch(clearMessage());
-        navigate(`/${path.LOGIN}`);
+      Swal.fire({
+        title: "Oops",
+        text: msg,
+        icon: "info",
+        showCancelButton: true,
+        cancelButtonText: "Maybe later...",
+      }).then((rs) => {
+        if (rs.isConfirmed) {
+          dispatch(clearMessage());
+          navigate(`/${path.LOGIN}`);
+        } else {
+          dispatch(clearMessage());
+        }
       });
   }, [msg]);
   return (

@@ -2,12 +2,14 @@ import moment from "moment";
 import { memo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { apiUpdateMember } from "../../api";
 import avatar from "../../assets/avatar-default.jpg";
 import { Button, InputForm } from "../../components";
+import withBaseComponent from "../../hocs/withBaseComponent";
 import { getCurrent } from "../../store/user/asyncActions";
-const Personal = () => {
+const Personal = ({ navigate }) => {
   const { current } = useSelector((state) => state.user);
   const {
     register,
@@ -23,9 +25,11 @@ const Personal = () => {
       email: current?.email,
       mobile: current?.mobile,
       avatar: current?.avatar,
+      address: current?.address,
     });
   }, [current]);
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
   const handleUpdateUser = async (data) => {
     const formData = new FormData();
     if (data.avatar.length > 0) formData.append("avatar", data.avatar[0]);
@@ -34,8 +38,9 @@ const Personal = () => {
     const response = await apiUpdateMember(formData);
     console.log(response);
     if (response.success) {
-      Swal.fire("Done!", response.msg, "success");
       dispatch(getCurrent());
+      Swal.fire("Done!", response.msg, "success");
+      if (searchParams.get("redirect")) navigate(searchParams.get("redirect"));
     } else {
       Swal.fire("Oops", response.msg, "error");
     }
@@ -97,6 +102,16 @@ const Personal = () => {
           fullWidth
           placeholder={"Type your mobile..."}
         />
+
+        <InputForm
+          label="Address:"
+          register={register}
+          errors={errors}
+          validate={{ required: "This field is required" }}
+          id="address"
+          fullWidth
+          placeholder={"Type your address..."}
+        />
         <div className="flex flex-col gap-2">
           <span>Profile Image:</span>
           <label className="w-[80px]" htmlFor="avatar">
@@ -121,4 +136,4 @@ const Personal = () => {
   );
 };
 
-export default memo(Personal);
+export default withBaseComponent(memo(Personal));
