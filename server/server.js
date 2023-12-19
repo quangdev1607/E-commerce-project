@@ -22,7 +22,7 @@ app.use(cookieParser());
 // const allowedOrigin = process.env.NODE_ENV === 'production' ? prodOrigin : devOrigin
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: "*",
     methods: ["POST", "PUT", "GET", "DELETE"],
     credentials: true,
   })
