@@ -15,22 +15,22 @@ export const navigations = [
   {
     id: 3,
     value: "BLOGS",
-    path: `/${path.BLOGS}`,
+    path: `/${path.HOME}`,
   },
   {
     id: 4,
     value: "FAQs",
-    path: `/${path.FAQs}`,
+    path: `/${path.HOME}`,
   },
   {
     id: 5,
     value: "SERVICES",
-    path: `/${path.SERVICES}`,
+    path: `/${path.HOME}`,
   },
   {
     id: 6,
     value: "CONTACT US",
-    path: `/${path.CONTACT}`,
+    path: `/${path.HOME}`,
   },
 ];
 

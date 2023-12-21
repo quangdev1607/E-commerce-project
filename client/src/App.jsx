@@ -46,10 +46,10 @@ function App() {
         <Route path={path.CHECKOUT} element={<Checkout />}></Route>
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />}></Route>
-          <Route path={path.BLOGS} element={<Blogs />}></Route>
-          <Route path={path.FAQs} element={<FAQ />}></Route>
-          <Route path={path.SERVICES} element={<Services />}></Route>
-          <Route path={path.CONTACT} element={<Contact />}></Route>
+          <Route path={path.HOME} element={<Home />}></Route>
+          <Route path={path.HOME} element={<Home />}></Route>
+          <Route path={path.HOME} element={<Home />}></Route>
+          <Route path={path.HOME} element={<Home />}></Route>
           <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}></Route>
           <Route path={path.PRODUCTS__CATEGORY} element={<Products />}></Route>
           <Route path={path.DETAIL_CART} element={<DetailCart />}></Route>

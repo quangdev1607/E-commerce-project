@@ -28,7 +28,7 @@ const DetailCart = ({ navigate, location }) => {
         }
       });
     else {
-      window.open(`/${path.CHECKOUT}`, "__blank");
+      navigate(`/${path.CHECKOUT}`);
     }
   };
 
