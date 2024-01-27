@@ -22,9 +22,9 @@ app.use(cookieParser());
 // const allowedOrigin = process.env.NODE_ENV === 'production' ? prodOrigin : devOrigin
 app.use(
   cors({
-    origin: "*",
+    origin: "https://digital-shop-client.vercel.app/",
     methods: ["POST", "PUT", "GET", "DELETE"],
-    credentials: false,
+    credentials: true,
   })
 );
 app.use(express.json());
